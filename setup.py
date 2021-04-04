@@ -1,14 +1,14 @@
 #!/usr/bin/env python
-import codecs
 import os
 
 from setuptools import setup, find_packages
 from src.find_dependencies import __version__
 
 
-def read(fname):
-    file_path = os.path.join(os.path.dirname(__file__), fname)
-    return codecs.open(file_path, encoding='utf-8').read()
+def read(file_name):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(here, file_name)) as f:
+        return f.read()
 
 
 setup(
