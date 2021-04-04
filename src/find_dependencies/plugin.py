@@ -8,7 +8,7 @@ def pytest_addoption(parser):
         "--find-dependencies",
         action="store_true",
         dest="find_dependencies",
-        help="""Run tests twice...""",
+        help="""Find dependencies between tests""",
     )
 
 

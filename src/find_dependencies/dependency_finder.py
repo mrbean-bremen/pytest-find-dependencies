@@ -2,6 +2,9 @@ from importlib import reload
 
 
 class DependencyFinder:
+    """Tries to find dependencies between tests using reverse executing
+    first and more test executions using binary search to get dependent
+    tests."""
     def __init__(self, session):
         self.session = session
         self.dependent_items = {}
