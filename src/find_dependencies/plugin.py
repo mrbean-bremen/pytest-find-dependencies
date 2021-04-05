@@ -1,3 +1,5 @@
+import sys
+
 from _pytest import main as pytest_main
 from find_dependencies.dependency_finder import DependencyFinder
 
@@ -10,6 +12,11 @@ def pytest_addoption(parser):
         dest="find_dependencies",
         help="""Find dependencies between tests""",
     )
+
+
+def pytest_cmdline_preparse(args):
+    if "--find-dependencies" in args and "pytest_randomly" in sys.modules:
+        args[:] = ["--randomly-dont-reorganize"] + args
 
 
 def pytest_runtestloop(session):

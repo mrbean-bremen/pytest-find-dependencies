@@ -69,10 +69,10 @@ jobs:
     - name: Run tests
       run: |
         TOX_PYTHON_VERSION=$(if [ ${{ matrix.python-version }} = pypy3 ]; then echo "pypy3"; else echo py${{ matrix.python-version }} | tr -d .; fi)
-        COV_CMD=$(if [ ${{ matrix.python-version }} = 3.8 ]; then echo "--cov=./pytest_order/ --cov-report=xml"; else echo ; fi) tox -e $(tox -l | grep $TOX_PYTHON_VERSION | paste -sd "," -)
+        COV_CMD=$(if [ ${{ matrix.python-version }} = 3.8 ]; then echo "--cov=. --cov-config=.coveragerc --cov-report=xml"; else echo ; fi) tox -e $(tox -l | grep $TOX_PYTHON_VERSION | paste -sd "," -)
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       if: ${{ success() && matrix.python-version == 3.8 }}
       with:
         env_vars: OS
-        name: codecov-pytest-order
+        name: codecov-pytest-find-dependencies

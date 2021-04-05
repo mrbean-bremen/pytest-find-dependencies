@@ -19,7 +19,7 @@ def test_no_checks_if_not_configured(test_path):
         def test_c(): pass
         """
     )
-    result = test_path.runpytest("-v")
+    result = test_path.runpytest("-v", "-p", "no:randomly")
     result.assert_outcomes(passed=3, failed=0)
     result.stdout.fnmatch_lines([
         "test_one.py::test_a PASSED",
@@ -70,7 +70,31 @@ def test_single_dependency_last_index(test_path):
         "test_one.py::test_b FAILED",
         "test_one.py::test_a PASSED",
         "Dependent tests:",
-        "test_one.py::test_c -> test_one.py::test_b"
+        "test_one.py::test_b depends on test_one.py::test_c"
+    ])
+
+
+def test_single_dependency_first_index(test_path):
+    test_path.makepyfile(
+        test_one="""
+        flag = True
+        def test_a(): global flag; flag = False
+        def test_b(): assert flag
+        def test_c(): pass
+        """
+    )
+
+    result = test_path.runpytest("-v", "--find-dependencies")
+    result.assert_outcomes(passed=5, failed=1)
+    result.stdout.fnmatch_lines([
+        "test_one.py::test_a PASSED",
+        "test_one.py::test_b FAILED",
+        "test_one.py::test_c PASSED",
+        "test_one.py::test_c PASSED",
+        "test_one.py::test_b PASSED",
+        "test_one.py::test_a PASSED",
+        "Dependent tests:",
+        "test_one.py::test_b depends on test_one.py::test_a"
     ])
 
 
@@ -99,7 +123,7 @@ def test_single_dependency1(test_path):
         "test_one.py::test_d PASSED",
         "test_one.py::test_b PASSED",
         "Dependent tests:",
-        "test_one.py::test_c -> test_one.py::test_b"
+        "test_one.py::test_b depends on test_one.py::test_c"
     ])
 
 
@@ -149,5 +173,5 @@ def test_single_dependency2(test_path):
         "test_one.py::test_h PASSED",
         "test_one.py::test_b PASSED",
         "Dependent tests:",
-        "test_one.py::test_g -> test_one.py::test_b"
+        "test_one.py::test_b depends on test_one.py::test_g"
     ])

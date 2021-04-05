@@ -22,9 +22,9 @@ Features
 --------
 
 The plugin aims to find dependencies between tests by running the tests
-in backwards direction, and trying to find any dependencies using a binary
-search. Note that the plugin is still work in progress.
-
+both in forwards and  backwards direction, and trying to find any
+dependencies using a binary search. Note that the plugin is still work
+in progress.
 
 Installation
 ------------

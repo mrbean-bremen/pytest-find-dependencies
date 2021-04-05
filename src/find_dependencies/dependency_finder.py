@@ -11,19 +11,22 @@ class DependencyFinder:
 
     def find_dependencies(self):
         failed1 = self.run_tests(self.session.items)
-        if failed1:
-            print("\nFailing test(s) on first run excluded from analysis")
-        items = self.session.items[::-1]
-        failed_items = self.run_tests(items) - failed1
-        for item in failed_items:
-            self.check_failed_item(item, items)
+        reversed_items = self.session.items[::-1]
+        self.reload_test_modules(reversed_items)
+        failed2 = self.run_tests(reversed_items)
+        # tests that fail in both runs are not considered
+        failed1, failed2 = failed1 - failed2, failed2 - failed1
+        for item in failed1:
+            self.check_failed_item(item, self.session.items)
+        for item in failed2:
+            self.check_failed_item(item, reversed_items)
 
         if not self.dependent_items:
             print("\nNo dependent tests found.")
         else:
             print("\nDependent tests:")
-            for dependent, item in self.dependent_items.items():
-                print(f"{item.nodeid} -> {dependent.nodeid}")
+            for item, dependent in self.dependent_items.items():
+                print(f"{item.nodeid} depends on {dependent.nodeid}")
 
     def check_failed_item(self, item, items, failed=True):
         index = items.index(item)
@@ -42,11 +45,15 @@ class DependencyFinder:
             sub_items_to_run = items[index + 1:mid_index] + [items[index]]
             sub_items = sub_items_to_run + items[mid_index:]
 
-        modules = {item.module for item in sub_items}
-        for module in modules:
-            reload(module)
+        self.reload_test_modules(sub_items)
         failed_items = self.run_tests(sub_items_to_run)
         self.check_failed_item(item, sub_items, item in failed_items)
+
+    @staticmethod
+    def reload_test_modules(items):
+        modules = {item.module for item in items}
+        for module in modules:
+            reload(module)
 
     def run_tests(self, items):
         failed_items = set()
