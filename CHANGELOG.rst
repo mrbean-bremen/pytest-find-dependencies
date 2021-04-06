@@ -9,6 +9,8 @@ New Features
 ~~~~~~~~~~~~
 * dependencies happening on first run (instead of the reverse run) are also
   considered
+* each test run is now executed in a separate process to minimize dependencies
+  between test runs (makes the process slower, however)
 
 Fixes
 ~~~~~

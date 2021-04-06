@@ -38,14 +38,7 @@ def test_no_dependencies(test_path):
     )
 
     result = test_path.runpytest("-v", "--find-dependencies")
-    result.assert_outcomes(passed=4, failed=2)
     result.stdout.fnmatch_lines([
-        "test_one.py::test_a PASSED",
-        "test_one.py::test_b FAILED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_b FAILED",
-        "test_one.py::test_a PASSED",
         "No dependent tests found."
     ])
 
@@ -60,15 +53,10 @@ def test_single_dependency_last_index(test_path):
         """
     )
 
-    result = test_path.runpytest("-v", "--find-dependencies")
-    result.assert_outcomes(passed=5, failed=1)
+    result = test_path.runpytest("--find-dependencies")
     result.stdout.fnmatch_lines([
-        "test_one.py::test_a PASSED",
-        "test_one.py::test_b PASSED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_b FAILED",
-        "test_one.py::test_a PASSED",
+        "Run dependency analysis for 3 tests.",
+        "Executed 6 tests in 2 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_c"
     ])
@@ -84,15 +72,10 @@ def test_single_dependency_first_index(test_path):
         """
     )
 
-    result = test_path.runpytest("-v", "--find-dependencies")
-    result.assert_outcomes(passed=5, failed=1)
+    result = test_path.runpytest("--find-dependencies")
     result.stdout.fnmatch_lines([
-        "test_one.py::test_a PASSED",
-        "test_one.py::test_b FAILED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_b PASSED",
-        "test_one.py::test_a PASSED",
+        "Run dependency analysis for 3 tests.",
+        "Executed 6 tests in 2 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_a"
     ])
@@ -109,19 +92,10 @@ def test_single_dependency1(test_path):
         """
     )
 
-    result = test_path.runpytest("-v", "--find-dependencies")
-    result.assert_outcomes(passed=9, failed=1)
+    result = test_path.runpytest("--find-dependencies")
     result.stdout.fnmatch_lines([
-        "test_one.py::test_a PASSED",
-        "test_one.py::test_b PASSED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_d PASSED",
-        "test_one.py::test_d PASSED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_b FAILED",
-        "test_one.py::test_a PASSED",
-        "test_one.py::test_d PASSED",
-        "test_one.py::test_b PASSED",
+        "Run dependency analysis for 4 tests.",
+        "Executed 10 tests in 3 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_c"
     ])
@@ -143,35 +117,117 @@ def test_single_dependency2(test_path):
         """
     )
 
-    result = test_path.runpytest("-v", "--find-dependencies")
-    result.assert_outcomes(passed=24, failed=2)
+    result = test_path.runpytest("--find-dependencies")
     result.stdout.fnmatch_lines([
-        "test_one.py::test_a PASSED",
-        "test_one.py::test_b PASSED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_d PASSED",
-        "test_one.py::test_e PASSED",
-        "test_one.py::test_f PASSED",
-        "test_one.py::test_g PASSED",
-        "test_one.py::test_h PASSED",
-        "test_one.py::test_i PASSED",
-        "test_one.py::test_i PASSED",
-        "test_one.py::test_h PASSED",
-        "test_one.py::test_g PASSED",
-        "test_one.py::test_f PASSED",
-        "test_one.py::test_e PASSED",
-        "test_one.py::test_d PASSED",
-        "test_one.py::test_c PASSED",
-        "test_one.py::test_b FAILED",
-        "test_one.py::test_a PASSED",
-        "test_one.py::test_i PASSED",
-        "test_one.py::test_h PASSED",
-        "test_one.py::test_g PASSED",
-        "test_one.py::test_b FAILED",
-        "test_one.py::test_i PASSED",
-        "test_one.py::test_b PASSED",
-        "test_one.py::test_h PASSED",
-        "test_one.py::test_b PASSED",
+        "Run dependency analysis for 9 tests.",
+        "Executed 26 tests in 5 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_g"
+    ])
+
+
+def test_single_dependency3(test_path):
+    test_path.makepyfile(
+        test_one="""
+        flag = True
+        def test_a(): pass
+        def test_b(): global flag; flag = False
+        def test_c(): pass
+        def test_d(): pass
+        def test_e(): assert flag
+        def test_f(): pass
+        def test_g(): pass
+        """
+    )
+
+    result = test_path.runpytest("-v", "--find-dependencies")
+    result.stdout.fnmatch_lines([
+        "Run dependency analysis for 7 tests.",
+        "Executed 19 tests in 4 test runs.",
+        "Dependent tests:",
+        "test_one.py::test_e depends on test_one.py::test_b"
+    ])
+
+
+def test_two_dependencies(test_path):
+    test_path.makepyfile(
+        test_one="""
+        flag = True
+        def test_a(): pass
+        def test_b(): assert flag
+        def test_c(): pass
+        def test_d(): assert flag
+        def test_e(): global flag; flag = False
+        def test_f(): pass
+        """
+    )
+
+    result = test_path.runpytest("-v", "--find-dependencies")
+    result.stdout.fnmatch_lines([
+        "Run dependency analysis for 6 tests.",
+        "Executed 19 tests in 5 test runs.",
+        "Dependent tests:",
+        "test_one.py::test_b depends on test_one.py::test_e",
+        "test_one.py::test_d depends on test_one.py::test_e"
+    ])
+
+
+def test_single_dependency_in_other_module1(test_path):
+    test_path.makepyfile(
+        test_one="""
+        import util
+        def test_a(): pass
+        def test_b(): util.set_flag(False)
+        def test_c(): pass
+        def test_d(): pass
+        def test_e(): assert util.flag
+        def test_f(): pass
+        def test_g(): pass
+        """
+    )
+    test_path.makepyfile(
+        util="""
+        flag = True
+        def set_flag(new_flag):
+            global flag
+            flag = new_flag
+        """
+    )
+
+    result = test_path.runpytest("-v", "--find-dependencies")
+    result.stdout.fnmatch_lines([
+        "Run dependency analysis for 7 tests.",
+        "Executed 19 tests in 4 test runs.",
+        "Dependent tests:",
+        "test_one.py::test_e depends on test_one.py::test_b"
+    ])
+
+
+def test_single_dependency_in_other_module2(test_path):
+    test_path.makepyfile(
+        test_one="""
+        import util
+        def test_a(): pass
+        def test_b(): assert util.flag
+        def test_c(): pass
+        def test_d(): pass
+        def test_e(): util.set_flag(False)
+        def test_f(): pass
+        def test_g(): pass
+        """
+    )
+    test_path.makepyfile(
+        util="""
+        flag = True
+        def set_flag(new_flag):
+            global flag
+            flag = new_flag
+        """
+    )
+    result = test_path.runpytest("-v", "--find-dependencies")
+    result.stdout.fnmatch_lines([
+        "Run dependency analysis for 7 tests.",
+        "Executed 19 tests in 4 test runs.",
+        "Dependent tests:",
+        "test_one.py::test_b depends on test_one.py::test_e"
     ])

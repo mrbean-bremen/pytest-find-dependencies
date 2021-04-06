@@ -10,6 +10,14 @@ pytest-find-dependencies
     :target: https://pypi.org/project/pytest-find-dependencies
     :alt: Python versions
 
+.. image:: https://github.com/mrbean-bremen/pytest-find-dependencies/workflows/Testsuite/badge.svg
+    :target: https://github.com/mrbean-bremen/pytest-find-dependencies/actions?query=workflow%3ATestsuite
+    :alt: Test suite
+
+.. image:: https://codecov.io/gh/mrbean-bremen/pytest-find-dependencies/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/mrbean-bremen/pytest-find-dependencies
+    :alt: Code coverage
+
 A pytest plugin to find dependencies between tests.
 
 ----
