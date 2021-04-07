@@ -26,13 +26,24 @@ This `pytest`_ plugin was generated with `Cookiecutter`_ along with
 `@hackebrot`_'s `cookiecutter-pytest-plugin`_ template.
 
 
-Features
---------
+Summary
+-------
 
-The plugin aims to find dependencies between tests by running the tests
-both in forwards and  backwards direction, and trying to find any
-dependencies using a binary search. Note that the plugin is still work
-in progress.
+Tests shall generally not depend on each other. To ensure this, plugins
+like `pytest-randomly`_ or  `pytest-reverse`_ are commonly used. These
+plugins find dependent tests, but it is up to you to find which test they
+are depend upon.
+
+The plugin aims to automate this task. Dependencies are found
+in the first place by running all tests in forward and backwards direction
+and checking if any tests fail if executed in one order but not in the other.
+This will find most (but not all) test dependencies (the same way as
+`pytest-reverse`_). If any dependent test is found, more test runs with
+a subset of all tests are run using binary search, until a test is found
+that causes the other test to fail.
+
+Running tests this way may be time-consuming, especially with many tests, so it
+is recommended to run this only once in a while.
 
 Installation
 ------------
@@ -45,7 +56,34 @@ Usage
 -----
 
 If the plugin is installed, it can be used by adding the pytest option
-`--find-dependencies`.
+`--find-dependencies`. After running all needed tests, all found
+dependencies are listed. Here is an example::
+
+    =================================================
+    Run dependency analysis for 7 tests.
+    Executed 19 tests in 4 test runs.
+    Dependent tests:
+    test_one.py::test_b depends on test_one.py::test_e
+    =================================================
+
+In this case 7 tests have been analyzed, one dependent test has been found
+after running the tests forwards and backwards, and after 2 additional test
+runs with an overall of 5 tests, the test it depended on was found.
+
+Limitations
+-----------
+Only dependencies are found that are reset with a new test run. If a test
+changes the environment permanently (for example by setting environment
+variables that are never reset), the dependency will not be found by this
+plugin.
+
+If you have installed `pytest-randomly`_, it will normally randomly reorder
+all tests. The plugin is disabled while running with `--find-dependencies`,
+and it is currently not possible to use fixed seed to start with a certain
+test order (may be added later).
+
+Other re-ordering plugins are currently not taken into account, so ordering
+tests manually will not change the outcome.
 
 Contributing
 ------------
@@ -73,3 +111,5 @@ If you encounter any problems, please `file an issue`_ along with a detailed des
 .. _`tox`: https://tox.readthedocs.io/en/latest/
 .. _`pip`: https://pypi.org/project/pip/
 .. _`PyPI`: https://pypi.org/project
+.. _`pytest-randomly`: https://github.com/pytest-dev/pytest-randomly
+.. _`pytest-reverse`: https://github.com/adamchainz/pytest-reverse
