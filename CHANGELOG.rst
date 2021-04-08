@@ -2,6 +2,14 @@
 Changelog for pytest-find-dependencies
 ======================================
 
+Unreleased
+----------
+
+Changes
+~~~~~~~
+* do not disable ``pytest-randomly`` (no more needed after the change to
+  separate processes)
+
 `0.2.0`_ (2021-04-07)
 ---------------------
 Makes finding dependencies more reliable.
@@ -15,7 +23,7 @@ New Features
 
 Fixes
 ~~~~~
-* disable pytest-randomly ordering if installed
+* disable ``pytest-randomly`` ordering if installed
 
 `0.1.0`_ (2021-04-04)
 ---------------------

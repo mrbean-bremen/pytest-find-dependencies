@@ -48,7 +48,7 @@ is recommended to run this only once in a while.
 Installation
 ------------
 
-You can install "pytest-find-dependencies" via `pip`_ from `PyPI`_::
+You can install ``pytest-find-dependencies`` via `pip`_ from `PyPI`_::
 
     $ pip install pytest-find-dependencies
 
@@ -77,13 +77,9 @@ changes the environment permanently (for example by setting environment
 variables that are never reset), the dependency will not be found by this
 plugin.
 
-If you have installed `pytest-randomly`_, it will normally randomly reorder
-all tests. The plugin is disabled while running with `--find-dependencies`,
-and it is currently not possible to use fixed seed to start with a certain
-test order (may be added later).
-
-Other re-ordering plugins are currently not taken into account, so ordering
-tests manually will not change the outcome.
+Other re-ordering plugins are only applied in the first test run, the order
+of the following test runs is solely defined by ``pytest-find-dependencies``.
+This means that ordering tests manually will not change the outcome.
 
 Contributing
 ------------
