@@ -5,6 +5,12 @@ Changelog for pytest-find-dependencies
 Unreleased
 ----------
 
+New Features
+~~~~~~~~~~~~
+* check if a dependency is due to a permanent change and list these tests
+  separately without trying to find the dependency (instead of listing an
+  incorrect dependency)
+
 Changes
 ~~~~~~~
 * do not disable ``pytest-randomly`` (no more needed after the change to

@@ -14,6 +14,7 @@ class DependencyFinder:
     def __init__(self, session):
         self.session = session
         self.dependent_items = {}
+        self.permanently_failed_items = []
         self.test_runs = 0
         self.test_number = 0
 
@@ -25,22 +26,35 @@ class DependencyFinder:
         failed1, failed2 = failed1 - failed2, failed2 - failed1
         for item in sorted(failed1, key=str):
             self.check_failed_item(item, self.session.items)
+
+        # tests failing in the second run have to checked if they fail
+        # permanently afterwards - in this case the we don't try to
+        # find the dependency
         for item in sorted(failed2, key=str):
-            self.check_failed_item(item, reversed_items)
+            self.check_failed_item(item, reversed_items, check_permanent=True)
 
         print("\n=================================================")
         print(f"Run dependency analysis for {len(self.session.items)} tests.")
         print(f"Executed {self.test_number} tests in "
               f"{self.test_runs} test runs.")
-        if not self.dependent_items:
+        if not self.dependent_items and not self.permanently_failed_items:
             print("No dependent tests found.")
         else:
-            print("Dependent tests:")
-            for item, dependent in self.dependent_items.items():
-                print(f"{item.nodeid} depends on {dependent.nodeid}")
+            if self.permanently_failed_items:
+                print("Tests failing permanently after all tests have run:")
+                for item in self.permanently_failed_items:
+                    print(item.nodeid)
+            if self.dependent_items:
+                print("Dependent tests:")
+                for item, dependent in self.dependent_items.items():
+                    print(f"{item.nodeid} depends on {dependent.nodeid}")
         print("=================================================")
 
-    def check_failed_item(self, item, items, failed=True):
+    def check_failed_item(self, item, items, failed=True,
+                          check_permanent=False):
+        if check_permanent and item in self.run_tests([item]):
+            self.permanently_failed_items.append(item)
+            return
         index = items.index(item)
         if failed:
             if index == 1:

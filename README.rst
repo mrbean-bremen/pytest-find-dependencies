@@ -54,7 +54,6 @@ You can install ``pytest-find-dependencies`` via `pip`_ from `PyPI`_::
 
 Usage
 -----
-
 If the plugin is installed, it can be used by adding the pytest option
 `--find-dependencies`. After running all needed tests, all found
 dependencies are listed. Here is an example::
@@ -70,13 +69,20 @@ In this case 7 tests have been analyzed, one dependent test has been found
 after running the tests forwards and backwards, and after 2 additional test
 runs with an overall of 5 tests, the test it depended on was found.
 
+Some dependencies can be due to a permanent change in the environment (for
+example by adding a change to a database that is nor reverted in subsequent
+test runs). In this case, the dependency cannot be found reliably, and these
+tests are listed separately::
+
+    =================================================
+    Run dependency analysis for 5 tests.
+    Executed 11 tests in 3 test runs.
+    Tests failing permanently after all tests have run:
+    test_one.py::test_b
+    =================================================
+
 Limitations
 -----------
-Only dependencies are found that are reset with a new test run. If a test
-changes the environment permanently (for example by setting environment
-variables that are never reset), the dependency will not be found by this
-plugin.
-
 Other re-ordering plugins are only applied in the first test run, the order
 of the following test runs is solely defined by ``pytest-find-dependencies``.
 This means that ordering tests manually will not change the outcome.
@@ -88,14 +94,12 @@ the coverage at least stays the same before you submit a pull request.
 
 License
 -------
-
 Distributed under the terms of the `MIT`_ license,
 "pytest-find-dependencies" is free and open source software.
 
 
 Issues
 ------
-
 If you encounter any problems, please `file an issue`_ along with a detailed description.
 
 .. _`Cookiecutter`: https://github.com/audreyr/cookiecutter

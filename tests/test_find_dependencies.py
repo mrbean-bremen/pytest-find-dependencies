@@ -77,7 +77,7 @@ def test_single_dependency_last_index(test_path):
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 3 tests.",
-        "Executed 6 tests in 2 test runs.",
+        "Executed 7 tests in 3 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_c"
     ])
@@ -116,7 +116,7 @@ def test_single_dependency1(test_path):
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 4 tests.",
-        "Executed 10 tests in 3 test runs.",
+        "Executed 11 tests in 4 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_c"
     ])
@@ -141,7 +141,7 @@ def test_single_dependency2(test_path):
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 9 tests.",
-        "Executed 26 tests in 5 test runs.",
+        "Executed 27 tests in 6 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_g"
     ])
@@ -251,7 +251,7 @@ def test_two_dependencies(test_path):
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 6 tests.",
-        "Executed 19 tests in 5 test runs.",
+        "Executed 21 tests in 7 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_e",
         "test_one.py::test_d depends on test_one.py::test_e"
@@ -313,7 +313,38 @@ def test_single_dependency_in_other_module2(test_path):
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 7 tests.",
-        "Executed 19 tests in 4 test runs.",
+        "Executed 20 tests in 5 test runs.",
         "Dependent tests:",
         "test_one.py::test_b depends on test_one.py::test_e"
+    ])
+
+
+def test_permanent_dependency(test_path):
+    test_path.makepyfile(
+        test_one="""
+        import util
+        def test_a(): pass
+        def test_b(): assert not util.lock_exists()
+        def test_c(): pass
+        def test_d(): util.create_lock()
+        def test_e(): pass
+        """
+    )
+    test_path.makepyfile(
+        util="""
+        import os
+        def create_lock():
+            with open("lock.lck", "w") as f:
+                f.write("test")
+
+        def lock_exists():
+            return os.path.exists("lock.lck")
+        """
+    )
+    result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    result.stdout.fnmatch_lines([
+        "Run dependency analysis for 5 tests.",
+        "Executed 11 tests in 3 test runs.",
+        "Tests failing permanently after all tests have run:",
+        "test_one.py::test_b"
     ])
