@@ -28,6 +28,42 @@ def test_no_checks_if_not_configured(test_path):
     ])
 
 
+def test_no_checks_for_single_test(test_path):
+    test_path.makepyfile(
+        test_one="""
+        def test_a(): pass
+        """
+    )
+    result = test_path.runpytest("-v", "--find-dependencies")
+    result.assert_outcomes(passed=1, failed=0)
+    result.stdout.fnmatch_lines([
+        "Only one test collected: ignoring option --find-dependencies",
+        "test_one.py::test_a PASSED",
+    ])
+
+
+def test_no_checks_if_collection_failed(test_path):
+    test_path.makepyfile(
+        test_one="""
+        def test_a(): pass
+        def test_b(): pass
+        """
+    )
+    test_path.makepyfile(
+        conftest="""
+        def pytest_collection(session):
+            session.perform_collect()
+            session.testsfailed = 1
+        """
+    )
+    result = test_path.runpytest("--find-dependencies")
+    result.assert_outcomes(passed=0, failed=0)
+    result.stdout.fnmatch_lines([
+        "*Interrupted: 1 errors during collection*",
+        "*no tests ran*"
+    ])
+
+
 def test_no_dependencies(test_path):
     test_path.makepyfile(
         test_one="""

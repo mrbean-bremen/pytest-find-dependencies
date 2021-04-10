@@ -70,7 +70,7 @@ after running the tests forwards and backwards, and after 2 additional test
 runs with an overall of 5 tests, the test it depended on was found.
 
 Some dependencies can be due to a permanent change in the environment (for
-example by adding a change to a database that is nor reverted in subsequent
+example by adding a change to a database that is not reverted in subsequent
 test runs). In this case, the dependency cannot be found reliably, and these
 tests are listed separately::
 

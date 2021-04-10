@@ -24,6 +24,10 @@ def pytest_runtestloop(session):
     if not session.config.getoption("find_dependencies"):
         return pytest_main.pytest_runtestloop(session)
 
+    if len(session.items) == 1:
+        print("Only one test collected: ignoring option --find-dependencies")
+        return pytest_main.pytest_runtestloop(session)
+
     if (session.testsfailed and
             not session.config.option.continue_on_collection_errors):
         raise session.Interrupted(
