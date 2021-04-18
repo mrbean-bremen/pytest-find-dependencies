@@ -2,8 +2,9 @@
 Changelog for pytest-find-dependencies
 ======================================
 
-Unreleased
-----------
+`0.3.0`_ (2021-04-18)
+---------------------
+Adds more information to the result.
 
 New Features
 ~~~~~~~~~~~~
@@ -46,3 +47,4 @@ New Features
 
 .. _`0.1.0`: https://pypi.org/project/pytest-find-dependencies/0.1.0/
 .. _`0.2.0`: https://pypi.org/project/pytest-find-dependencies/0.2.0/
+.. _`0.3.0`: https://pypi.org/project/pytest-find-dependencies/0.3.0/
