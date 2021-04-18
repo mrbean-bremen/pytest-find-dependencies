@@ -11,6 +11,12 @@ def pytest_addoption(parser):
         help="""Find dependencies between tests""",
     )
     group.addoption(
+        "--reversed-first",
+        action="store_true",
+        dest="reversed_first",
+        help="""Run the test in reverse direction first""",
+    )
+    group.addoption(
         "--find-dependencies-internal",
         action="store_true",
         dest="find_dependencies_internal",

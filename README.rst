@@ -81,6 +81,13 @@ tests are listed separately::
     test_one.py::test_b
     =================================================
 
+Dependencies due to a permanent change will only be found if the offending
+test is run before the dependent test, otherwise the test will just fail both
+times.
+
+The option ``--reversed-first`` allows you to reverse the sequence of the
+first two test runs.
+
 Limitations
 -----------
 Other re-ordering plugins are only applied in the first test run, the order

@@ -10,6 +10,8 @@ New Features
 * check if a dependency is due to a permanent change and list these tests
   separately without trying to find the dependency (instead of listing an
   incorrect dependency)
+* added option ``reversed-first`` to first execute the tests in reversed
+  direction.
 
 Changes
 ~~~~~~~
