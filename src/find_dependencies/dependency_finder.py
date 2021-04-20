@@ -19,12 +19,25 @@ class DependencyFinder:
         self.test_number = 0
 
     def find_dependencies(self):
+        items = self.session.items
+        ignored_markers = (self.session.config.getoption(
+            "markers_to_ignore") or "").split(",")
+        if ignored_markers:
+            ignored_items = []
+            for item in items:
+                for ignored_marker in ignored_markers:
+                    if item.get_closest_marker(ignored_marker):
+                        ignored_items.append(item)
+                        break
+            for ignored_item in ignored_items:
+                items.remove(ignored_item)
+
         reversed_first = self.session.config.getoption("reversed_first")
-        reversed_items = self.session.items[::-1]
+        reversed_items = items[::-1]
         if reversed_first:
-            items1, items2 = reversed_items, self.session.items
+            items1, items2 = reversed_items, items
         else:
-            items1, items2 = self.session.items, reversed_items
+            items1, items2 = items, reversed_items
         failed1 = self.run_tests(items1)
         failed2 = self.run_tests(items2)
         always_failing_items = failed1.intersection(failed2)

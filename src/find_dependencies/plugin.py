@@ -17,6 +17,12 @@ def pytest_addoption(parser):
         help="""Run the test in reverse direction first""",
     )
     group.addoption(
+        "--markers-to-ignore",
+        action="store",
+        dest="markers_to_ignore",
+        help="""A comma separated list of markers of tests to ignore.""",
+    )
+    group.addoption(
         "--find-dependencies-internal",
         action="store_true",
         dest="find_dependencies_internal",

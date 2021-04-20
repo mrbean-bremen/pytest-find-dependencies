@@ -442,3 +442,29 @@ def test_permanent_dependency_reversed_first(test_path):
         "  test_one.py::test_b",
         "No dependent tests found."
     ])
+
+
+def test_ignored_tests_with_marker_no_dependency(test_path):
+    test_path.makepyfile(
+        test_one="""
+        import pytest
+
+        def test_a(): pass
+        @pytest.mark.order(2)
+        def test_b(): pass
+        def test_c(): pass
+        def test_d(): pass
+        @pytest.mark.order(1)
+        def test_e(): pass
+        @pytest.mark.dependency
+        def test_f(): pass
+        """
+    )
+    result = test_path.runpytest("--find-dependencies", "-vv",
+                                 "--markers-to-ignore=order,dependency",
+                                 "-p", "no:randomly")
+    result.stdout.fnmatch_lines([
+        "Run dependency analysis for 3 tests.",
+        "Executed 6 tests in 2 test runs.",
+        "No dependent tests found."
+    ])

@@ -88,6 +88,19 @@ times.
 The option ``--reversed-first`` allows you to reverse the sequence of the
 first two test runs.
 
+The option ``--markers-to-ignore`` allows to define a comma-separated list
+of marker names. Tests that have these markers will be ignored in the
+analysis (e.g. not run at all). This can be used to exclude tests that have
+markers that define the test order. Examples include ``dependency`` (from the
+``pytest-dependency`` plugin), ``order`` (from ``pytest-order``) or
+``depends`` (from ``pytest-depends``). To ignore all tests with a
+``dependency`` marker, you can use::
+
+  python -m pytest --find-dependencies --markers-to-ignore=dependency
+
+Note that in this case you also won't find other tests depending on the
+ordered markers.
+
 Limitations
 -----------
 Other re-ordering plugins are only applied in the first test run, the order

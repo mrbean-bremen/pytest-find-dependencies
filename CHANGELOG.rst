@@ -2,6 +2,13 @@
 Changelog for pytest-find-dependencies
 ======================================
 
+Unreleased
+----------
+New Features
+~~~~~~~~~~~~
+* added the option ``--markers-to-ignore`` to allow to ignore tests with
+  ordering markers
+
 `0.3.0`_ (2021-04-18)
 ---------------------
 Adds more information to the result.
