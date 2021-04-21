@@ -2,8 +2,10 @@
 Changelog for pytest-find-dependencies
 ======================================
 
-Unreleased
-----------
+`0.4.0`_ (2021-04-21)
+---------------------
+Added ``--markers-to-ignore`` option.
+
 New Features
 ~~~~~~~~~~~~
 * added the option ``--markers-to-ignore`` to allow to ignore tests with
@@ -55,3 +57,4 @@ New Features
 .. _`0.1.0`: https://pypi.org/project/pytest-find-dependencies/0.1.0/
 .. _`0.2.0`: https://pypi.org/project/pytest-find-dependencies/0.2.0/
 .. _`0.3.0`: https://pypi.org/project/pytest-find-dependencies/0.3.0/
+.. _`0.4.0`: https://pypi.org/project/pytest-find-dependencies/0.4.0/
