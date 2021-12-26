@@ -116,7 +116,8 @@ class DependencyFinder:
 def run_tests(session):
     all_items = {item.nodeid: item for item in session.items}
     node_ids = session.config.cache.get(CACHE_KEY_IDS, [])
-    items = [all_items[node_id] for node_id in node_ids]
+    items = [all_items[node_id] for node_id in node_ids
+             if node_id in all_items]
     failed_node_ids = []
     for index, item in enumerate(items):
         test_failed = session.testsfailed
