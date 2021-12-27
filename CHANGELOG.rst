@@ -2,6 +2,13 @@
 Changelog for pytest-find-dependencies
 ======================================
 
+Unreleased
+----------
+
+Infrastructure:
+~~~~~~~~~~~~~~~
+* ignore warnings in tests where they may change the outcome (see `#2`_)
+
 `0.4.1`_ (2021-12-26)
 ---------------------
 
@@ -71,3 +78,4 @@ New Features
 .. _`0.4.0`: https://pypi.org/project/pytest-find-dependencies/0.4.0/
 .. _`0.4.1`: https://pypi.org/project/pytest-find-dependencies/0.4.1/
 .. _`#1`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/1
+.. _`#2`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/2
