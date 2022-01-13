@@ -468,3 +468,28 @@ def test_ignored_tests_with_marker_no_dependency(test_path):
         "Executed 6 tests in 2 test runs.",
         "No dependent tests found."
     ])
+
+
+def test_filenames(test_path):
+    test_path.makepyfile(
+        test_one="""
+        def test_a(): print("one::a")
+        def test_b(): print("one::b")
+        """,
+        test_two="""
+        def test_c(): print("two::a")
+        def test_d(): print("two::b")
+        """,
+        test_three="""
+        def test_e(): print("three::a")
+        def test_f(): print("three::b")
+        """
+    )
+
+    result = test_path.runpytest(
+        "--find-dependencies", "test_one.py", "test_three.py")
+    result.stdout.fnmatch_lines([
+        "Run dependency analysis for 4 tests.",
+        "Executed 8 tests in 2 test runs.",
+        "No dependent tests found."
+    ])

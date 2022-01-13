@@ -103,8 +103,8 @@ class DependencyFinder:
     def run_tests(self, items):
         items = {item.nodeid: item for item in items}
         self.session.config.cache.set(CACHE_KEY_IDS, list(items.keys()))
-        p = Process(target=pytest.main,
-                    args=[["-q", "--find-dependencies-internal"]])
+        args = ["--find-dependencies-internal"] + self.session.config.args
+        p = Process(target=pytest.main, args=[args])
         p.start()
         p.join()
         failed_node_ids = self.session.config.cache.get(CACHE_KEY_FAILED, [])
