@@ -101,11 +101,24 @@ markers that define the test order. Examples include ``dependency`` (from the
 Note that in this case you also won't find other tests depending on the
 ordered markers.
 
-Limitations
------------
-Other re-ordering plugins are only applied in the first test run, the order
-of the following test runs is solely defined by ``pytest-find-dependencies``.
-This means that ordering tests manually will not change the outcome.
+Notes
+-----
+- additional command line options are currently ignored for running the tests
+  in dependency find mode
+- if any dependent tests are found, the exit code of the pytest run will be
+  set to 1
+- after finishing all test runs and displaying the result, "no tests run"
+  is currently displayed on the summary line - this can be safely ignored
+
+Usage of ordering plugins
+-------------------------
+If you use plugins which change the test order using markers, theses will only
+be applied in the first test run. The order of the following test runs is
+solely defined by ``pytest-find-dependencies``. This means that if you use
+ordering plugins like ``pytest-order``, the dependencies will still be
+found, if you don't exclude these tests (which may or may not be wanted).
+Using ``pytest-randomly`` will randomize the first test run and can be used
+in combination with ``pytest-find-dependencies`` without problems.
 
 Contributing
 ------------
@@ -117,10 +130,10 @@ License
 Distributed under the terms of the `MIT`_ license,
 "pytest-find-dependencies" is free and open source software.
 
-
 Issues
 ------
-If you encounter any problems, please `file an issue`_ along with a detailed description.
+If you encounter any problems or have a feature request, please
+`file an issue`_ along with a detailed description.
 
 .. _`Cookiecutter`: https://github.com/audreyr/cookiecutter
 .. _`@hackebrot`: https://github.com/hackebrot

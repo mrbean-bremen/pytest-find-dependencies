@@ -58,6 +58,7 @@ def test_no_checks_if_collection_failed(test_path):
     )
     result = test_path.runpytest("--find-dependencies", "-W ignore")
     result.assert_outcomes(passed=0, failed=0)
+    assert int(result.ret) == 2
     result.stdout.fnmatch_lines([
         "*Interrupted: 1 errors during collection*",
         "*no tests ran*"
@@ -74,6 +75,7 @@ def test_no_dependencies(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies")
+    assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "The following tests are always failing and are "
         "excluded from the analysis:",
@@ -94,6 +96,7 @@ def test_single_dependency_collect_only(test_path):
 
     result = test_path.runpytest("--find-dependencies", "--collect-only",
                                  "-p", "no:randomly")
+    assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "collected 3 items",
         "<Module test_one.py>",
@@ -114,6 +117,7 @@ def test_single_dependency_last_index(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 3 tests.",
         "Executed 7 tests in 3 test runs.",
@@ -133,6 +137,7 @@ def test_single_dependency_first_index(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 3 tests.",
         "Executed 6 tests in 2 test runs.",
@@ -153,6 +158,7 @@ def test_single_dependency1(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 4 tests.",
         "Executed 11 tests in 4 test runs.",
@@ -174,6 +180,7 @@ def test_single_reversed_first(test_path):
 
     result = test_path.runpytest("--find-dependencies", "--reversed-first",
                                  "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 4 tests.",
         "Executed 10 tests in 3 test runs.",
@@ -199,6 +206,7 @@ def test_single_dependency2(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 9 tests.",
         "Executed 27 tests in 6 test runs.",
@@ -222,6 +230,7 @@ def test_single_dependency3(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 7 tests.",
         "Executed 19 tests in 4 test runs.",
@@ -242,6 +251,7 @@ def test_single_dependency1_with_randomly(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 4 tests.",
         "Dependent tests:",
@@ -266,6 +276,7 @@ def test_single_dependency2_with_randomly(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 9 tests.",
         "Dependent tests:",
@@ -288,6 +299,7 @@ def test_single_dependency3_with_randomly(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 7 tests.",
         "Dependent tests:",
@@ -309,6 +321,7 @@ def test_two_dependencies(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 6 tests.",
         "Executed 21 tests in 7 test runs.",
@@ -341,6 +354,7 @@ def test_single_dependency_in_other_module1(test_path):
     )
 
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 7 tests.",
         "Executed 19 tests in 4 test runs.",
@@ -371,6 +385,7 @@ def test_single_dependency_in_other_module2(test_path):
         """
     )
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 7 tests.",
         "Executed 20 tests in 5 test runs.",
@@ -402,6 +417,7 @@ def test_permanent_dependency(test_path):
         """
     )
     result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 5 tests.",
         "Executed 11 tests in 3 test runs.",
@@ -434,6 +450,7 @@ def test_permanent_dependency_reversed_first(test_path):
     )
     result = test_path.runpytest("--find-dependencies", "--reversed-first",
                                  "-p", "no:randomly")
+    assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 5 tests.",
         "Executed 10 tests in 2 test runs.",
@@ -463,6 +480,7 @@ def test_ignored_tests_with_marker_no_dependency(test_path):
     result = test_path.runpytest("--find-dependencies", "-vv",
                                  "--markers-to-ignore=order,dependency",
                                  "-p", "no:randomly")
+    assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 3 tests.",
         "Executed 6 tests in 2 test runs.",
@@ -488,6 +506,7 @@ def test_filenames(test_path):
 
     result = test_path.runpytest(
         "--find-dependencies", "test_one.py", "test_three.py")
+    assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 4 tests.",
         "Executed 8 tests in 2 test runs.",

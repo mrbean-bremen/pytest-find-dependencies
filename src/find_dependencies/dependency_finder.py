@@ -75,6 +75,22 @@ class DependencyFinder:
                 for item, dependent in self.dependent_items.items():
                     print(f"  {item.nodeid} depends on {dependent.nodeid}")
         print("=====================================================")
+        self.set_exitstatus()
+
+    def set_exitstatus(self):
+        """Set the exitstatus to failed if dependent tests where found."""
+        self.session.testsfailed = (len(self.dependent_items) +
+                                    len(self.permanently_failed_items))
+        if self.session.testsfailed:
+            try:
+                # pytest >= 5
+                from pytest import ExitCode
+                tests_failed = ExitCode.TESTS_FAILED
+            except ImportError:
+                # pytest < 5
+                from _pytest.main import EXIT_TESTSFAILED
+                tests_failed = EXIT_TESTSFAILED
+            self.session.exitstatus = tests_failed
 
     def check_failed_item(self, item, items, failed=True,
                           check_permanent=False):
