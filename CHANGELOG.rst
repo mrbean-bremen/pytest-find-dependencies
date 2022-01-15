@@ -2,8 +2,10 @@
 Changelog for pytest-find-dependencies
 ======================================
 
-Unreleased
-----------
+`0.5.0`_ (2022-01-15)
+---------------------
+Improves usability, fixes double test runs.
+
 Changes
 ~~~~~~~
 * dropped support for pytest versions < 4.3.0
