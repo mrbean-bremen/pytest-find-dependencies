@@ -103,10 +103,12 @@ ordered markers.
 
 Notes
 -----
-- additional command line options are currently ignored for running the tests
+- command line options given in the test are passed to all test runs
   in dependency find mode
 - if any dependent tests are found, the exit code of the pytest run will be
   set to 1
+- if ``pytest-xdist`` is detected, it is ensured that the internal tests
+  are not distributed, as this would break the dependency check
 - after finishing all test runs and displaying the result, "no tests run"
   is currently displayed on the summary line - this can be safely ignored
 

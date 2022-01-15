@@ -119,7 +119,10 @@ class DependencyFinder:
     def run_tests(self, items):
         items = {item.nodeid: item for item in items}
         self.session.config.cache.set(CACHE_KEY_IDS, list(items.keys()))
-        args = ["--find-dependencies-internal"] + self.session.config.args
+        args = ["--find-dependencies-internal"]
+        if hasattr(self.session.config, "initial_args"):
+            args += self.session.config.initial_args
+        print(f"Running pytest with arguments {args}")
         p = Process(target=pytest.main, args=[args])
         p.start()
         p.join()
@@ -143,3 +146,6 @@ def run_tests(session):
         if session.testsfailed > test_failed:
             failed_node_ids.append(item.nodeid)
     session.config.cache.set(CACHE_KEY_FAILED, failed_node_ids)
+    # clear the items - otherwise the tests will be run again by
+    # pytest's own pytest_runtestloop
+    session.items.clear()

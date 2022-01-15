@@ -1,3 +1,6 @@
+import re
+import sys
+
 from _pytest import main as pytest_main
 from find_dependencies.dependency_finder import DependencyFinder, run_tests
 
@@ -50,3 +53,27 @@ def pytest_runtestloop(session):
 
     DependencyFinder(session).find_dependencies()
     return True
+
+
+def pytest_load_initial_conftests(early_config, args):
+    """Saves initial arguments to be passed to the test runs."""
+    if "--find-dependencies" in args:
+        # make sure that xdist is not used for the tests
+        if "xdist" in sys.modules:
+            disable_xdist(args)
+        early_config.initial_args = args[:]
+        early_config.initial_args.remove("--find-dependencies")
+
+
+def disable_xdist(args):
+    for i, arg in enumerate(args):
+        # remove -n # option
+        if arg == "-n":
+            del args[i]
+            del args[i]
+            break
+        # remove -n# option
+        if re.match(r"-n\d+", arg):
+            del args[i]
+            break
+    args.insert(0, "-n0")

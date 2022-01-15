@@ -23,8 +23,8 @@ setup(
     description='A pytest plugin to find dependencies between tests',
     long_description=read('README.rst'),
     py_modules=['pytest_find_dependencies'],
-    python_requires='>=3.5',
-    install_requires=['pytest>=3.5.0'],
+    python_requires='>=3.6',
+    install_requires=['pytest>=4.3.0'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Pytest',

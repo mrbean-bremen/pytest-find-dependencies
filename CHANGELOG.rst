@@ -4,14 +4,21 @@ Changelog for pytest-find-dependencies
 
 Unreleased
 ----------
+Changes
+~~~~~~~
+* dropped support for pytest versions < 4.3.0
 
-Changes:
-~~~~~~~~
-* set exit status to failed if dependent tests are found (see `#3`_)
+New Features
+~~~~~~~~~~~~
+* exit status is set to failed if dependent tests are found (see `#3`_)
+* command line parameters are now passed to the internal test runs
 
 Fixes:
 ~~~~~~
 * ignore warnings in tests where they may change the outcome (see `#2`_)
+* tests have been running twice in each test run
+* if `pytest-xdist` is installed, it is ensured that it is not used for the
+  tests, as it would compromise the test result
 
 `0.4.1`_ (2021-12-26)
 ---------------------
