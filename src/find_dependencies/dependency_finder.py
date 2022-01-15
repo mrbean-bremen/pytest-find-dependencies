@@ -122,7 +122,7 @@ class DependencyFinder:
         args = ["--find-dependencies-internal"]
         if hasattr(self.session.config, "initial_args"):
             args += self.session.config.initial_args
-        print(f"Running pytest with arguments {args}")
+        print(f"Running pytest with arguments {' '.join(args)}")
         p = Process(target=pytest.main, args=[args])
         p.start()
         p.join()

@@ -512,3 +512,30 @@ def test_filenames(test_path):
         "Executed 8 tests in 2 test runs.",
         "No dependent tests found."
     ])
+
+
+def test_passed_arguments(test_path):
+    test_path.makepyfile(
+        test_one="""
+        def test_a(): print("one::a")
+        def test_b(): print("one::b")
+        """,
+        test_two="""
+        def test_c(): print("two::a")
+        def test_d(): print("two::b")
+        """
+    )
+
+    result = test_path.runpytest(
+        "--find-dependencies", "-n", "2", "-s")
+    assert int(result.ret) == 0
+    result.stdout.fnmatch_lines([
+        "Running pytest with arguments --find-dependencies-internal -n0 -s *",
+    ])
+
+    result = test_path.runpytest(
+        "--find-dependencies", "-n3", "-v")
+    assert int(result.ret) == 0
+    result.stdout.fnmatch_lines([
+        "Running pytest with arguments --find-dependencies-internal -n0 -v *",
+    ])
