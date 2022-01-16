@@ -517,6 +517,29 @@ def test_filenames(test_path):
 def test_passed_arguments(test_path):
     test_path.makepyfile(
         test_one="""
+        flag = True
+        def test_a(): pass
+        def test_b(): assert flag
+        def test_c(): global flag; flag = False
+        """
+    )
+
+    result = test_path.runpytest("--find-dependencies", "-p", "no:randomly",
+                                 "-v", "-s")
+    assert int(result.ret) == 1
+    result.stdout.fnmatch_lines([
+        "Running pytest with arguments --find-dependencies-internal "
+        "-n0 -p no:randomly -v -s *",
+        "Run dependency analysis for 3 tests.",
+        "Executed 7 tests in 3 test runs.",
+        "Dependent tests:",
+        "  test_one.py::test_b depends on test_one.py::test_c"
+    ])
+
+
+def test_removed_xdist_args(test_path):
+    test_path.makepyfile(
+        test_one="""
         def test_a(): print("one::a")
         def test_b(): print("one::b")
         """,

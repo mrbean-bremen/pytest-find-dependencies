@@ -42,9 +42,6 @@ This will find most (but not all) test dependencies (the same way as
 a subset of all tests are run using binary search, until a test is found
 that causes the other test to fail.
 
-Running tests this way may be time-consuming, especially with many tests, so it
-is recommended to run this only once in a while.
-
 Installation
 ------------
 
@@ -111,6 +108,11 @@ Notes
   are not distributed, as this would break the dependency check
 - after finishing all test runs and displaying the result, "no tests run"
   is currently displayed on the summary line - this can be safely ignored
+- if no dependent tests are found, the test will run twice as long as without
+  the option (because each test will be executed twice), with one dependent
+  test it will take about three times as long as the original tests, and with
+  each found dependent test it will take more time (e.g. more repeated tests)
+
 
 Usage of ordering plugins
 -------------------------
