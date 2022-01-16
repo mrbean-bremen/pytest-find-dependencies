@@ -71,12 +71,12 @@ example by adding a change to a database that is not reverted in subsequent
 test runs). In this case, the dependency cannot be found reliably, and these
 tests are listed separately::
 
-    =================================================
+    ============================== Results ===============================
     Run dependency analysis for 5 tests.
     Executed 11 tests in 3 test runs.
     Tests failing permanently after all tests have run:
     test_one.py::test_b
-    =================================================
+    ======================================================================
 
 Dependencies due to a permanent change will only be found if the offending
 test is run before the dependent test, otherwise the test will just fail both
@@ -106,8 +106,6 @@ Notes
   set to 1
 - if ``pytest-xdist`` is detected, it is ensured that the internal tests
   are not distributed, as this would break the dependency check
-- after finishing all test runs and displaying the result, "no tests run"
-  is currently displayed on the summary line - this can be safely ignored
 - if no dependent tests are found, the test will run twice as long as without
   the option (because each test will be executed twice), with one dependent
   test it will take about three times as long as the original tests, and with

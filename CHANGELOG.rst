@@ -5,9 +5,19 @@ Changelog for pytest-find-dependencies
 Unreleased
 ----------
 
+Changes
+~~~~~~~
+* run the outer test in quiet mode to avoid confusing messages; the
+  given verbosity is still used for the internal test runs
+
+Fixes
+~~~~~
+* do not try to find dependencies with ``setup-only`` and ``setup-plan``
+  options
+
 Infrastructure
 ~~~~~~~~~~~~~~
-* Added CI tests for different pytest versions
+* added CI tests for different pytest versions
 
 `0.5.0`_ (2022-01-15)
 ---------------------

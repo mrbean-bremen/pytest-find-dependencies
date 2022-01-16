@@ -106,6 +106,28 @@ def test_single_dependency_collect_only(test_path):
     ])
 
 
+def test_single_dependency_setup_only(test_path):
+    test_path.makepyfile(
+        test_one="""
+        flag = True
+        def test_a(): pass
+        def test_b(): assert flag
+        def test_c(): global flag; flag = False
+        """
+    )
+
+    result = test_path.runpytest("--find-dependencies", "--setup-only",
+                                 "-p", "no:randomly")
+    assert int(result.ret) == 0
+    result.stdout.fnmatch_lines([
+        "collected 3 items",
+        "test_one.py*",
+        "        test_one.py::test_a",
+        "        test_one.py::test_b",
+        "        test_one.py::test_c"
+    ])
+
+
 def test_single_dependency_last_index(test_path):
     test_path.makepyfile(
         test_one="""
@@ -535,6 +557,51 @@ def test_passed_arguments(test_path):
         "Dependent tests:",
         "  test_one.py::test_b depends on test_one.py::test_c"
     ])
+
+
+@pytest.mark.skipif(pytest.__version__ < "5.3.0",
+                    reason="no_fnmatch_line not available")
+def test_verbosity_ignored_in_outer_test(test_path):
+    test_path.makepyfile(
+        test_one="""
+        flag = True
+        def test_a(): pass
+        def test_b(): assert flag
+        def test_c(): global flag; flag = False
+        """
+    )
+
+    result = test_path.runpytest("--find-dependencies", "-vv")
+    assert int(result.ret) == 1
+    result.stdout.no_fnmatch_line("* no tests ran *")
+
+    result = test_path.runpytest("--find-dependencies", "-q")
+    assert int(result.ret) == 1
+    result.stdout.no_fnmatch_line("* no tests ran *")
+
+    result = test_path.runpytest("--find-dependencies", "--verbosity=1")
+    assert int(result.ret) == 1
+    result.stdout.no_fnmatch_line("* no tests ran *")
+
+
+def test_verbosity_restored_for_single_test(test_path):
+    test_path.makepyfile(
+        test_one="""
+        def test_a(): pass
+        """
+    )
+
+    result = test_path.runpytest("--find-dependencies", "-vv")
+    assert int(result.ret) == 0
+    result.stdout.fnmatch_lines(["* 1 passed in *"])
+
+    result = test_path.runpytest("--find-dependencies", "-q")
+    assert int(result.ret) == 0
+    result.stdout.fnmatch_lines(["*1 passed in *"])
+
+    result = test_path.runpytest("--find-dependencies", "--verbosity=1")
+    assert int(result.ret) == 0
+    result.stdout.fnmatch_lines(["* 1 passed in *"])
 
 
 def test_removed_xdist_args(test_path):

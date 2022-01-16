@@ -52,8 +52,8 @@ class DependencyFinder:
         # find the dependency
         for item in sorted(failed2, key=str):
             self.check_failed_item(item, items2, check_permanent=True)
-
-        print("\n=====================================================")
+        print()
+        print("=" * 30, "Results", "=" * 31)
         print(f"Run dependency analysis for {len(items1)} tests.")
         print(f"Executed {self.test_number} tests in "
               f"{self.test_runs} test runs.")
@@ -63,7 +63,8 @@ class DependencyFinder:
             for item in sorted(always_failing_items):
                 print(f"  {item.nodeid}")
 
-        if not self.dependent_items and not self.permanently_failed_items:
+        failed = self.dependent_items or self.permanently_failed_items
+        if not failed:
             print("No dependent tests found.")
         else:
             if self.permanently_failed_items:
@@ -74,7 +75,8 @@ class DependencyFinder:
                 print("Dependent tests:")
                 for item, dependent in self.dependent_items.items():
                     print(f"  {item.nodeid} depends on {dependent.nodeid}")
-        print("=====================================================")
+        print(f"\nDependency test {'FAILED' if failed else 'PASSED'}")
+        print("=" * 70)
         self.set_exitstatus()
 
     def set_exitstatus(self):
