@@ -5,6 +5,10 @@ Changelog for pytest-find-dependencies
 Unreleased
 ----------
 
+`0.5.1`_ (2022-01-16)
+---------------------
+Slightly improves test output.
+
 Changes
 ~~~~~~~
 * run the outer test in quiet mode to avoid confusing messages; the
