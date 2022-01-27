@@ -111,6 +111,8 @@ New Features
 .. _`0.3.0`: https://pypi.org/project/pytest-find-dependencies/0.3.0/
 .. _`0.4.0`: https://pypi.org/project/pytest-find-dependencies/0.4.0/
 .. _`0.4.1`: https://pypi.org/project/pytest-find-dependencies/0.4.1/
+.. _`0.5.0`: https://pypi.org/project/pytest-find-dependencies/0.5.0/
+.. _`0.5.1`: https://pypi.org/project/pytest-find-dependencies/0.5.1/
 .. _`#1`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/1
 .. _`#2`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/2
 .. _`#3`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/3

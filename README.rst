@@ -52,7 +52,7 @@ You can install ``pytest-find-dependencies`` via `pip`_ from `PyPI`_::
 Usage
 -----
 If the plugin is installed, it can be used by adding the pytest option
-`--find-dependencies`. After running all needed tests, all found
+``--find-dependencies``. After running all needed tests, all found
 dependencies are listed. Here is an example::
 
     =================================================
