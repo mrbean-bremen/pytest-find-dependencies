@@ -60,7 +60,7 @@ class DependencyFinder:
         if always_failing_items:
             print("The following tests are always failing and "
                   "are excluded from the analysis:")
-            for item in sorted(always_failing_items):
+            for item in sorted(always_failing_items, key=str):
                 print(f"  {item.nodeid}")
 
         failed = self.dependent_items or self.permanently_failed_items

@@ -10,6 +10,11 @@ Infrastructure
 * added pytest 7.0 to CI tests
 
 
+Fixes
+-----
+* Fix crash when multiple "always failing" tests are detected (see `#6`_)
+
+
 `0.5.1`_ (2022-01-16)
 ---------------------
 Slightly improves test output.

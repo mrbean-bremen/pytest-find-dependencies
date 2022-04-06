@@ -71,6 +71,7 @@ def test_no_dependencies(test_path):
         def test_a(): pass
         def test_b(): assert False
         def test_c(): pass
+        def test_d(): assert False
         """
     )
 
@@ -80,6 +81,7 @@ def test_no_dependencies(test_path):
         "The following tests are always failing and are "
         "excluded from the analysis:",
         "  test_one.py::test_b",
+        "  test_one.py::test_d",
         "No dependent tests found."
     ])
 
