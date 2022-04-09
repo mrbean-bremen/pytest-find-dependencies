@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 pytest_plugins = ["pytester"]
@@ -538,6 +540,8 @@ def test_filenames(test_path):
     ])
 
 
+@pytest.mark.skipif("xdist" not in sys.modules,
+                    reason="pytest-xdist not installed")
 def test_passed_arguments(test_path):
     test_path.makepyfile(
         test_one="""
@@ -606,6 +610,8 @@ def test_verbosity_restored_for_single_test(test_path):
     result.stdout.fnmatch_lines(["* 1 passed in *"])
 
 
+@pytest.mark.skipif("xdist" not in sys.modules,
+                    reason="pytest-xdist not installed")
 def test_removed_xdist_args(test_path):
     test_path.makepyfile(
         test_one="""

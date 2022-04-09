@@ -8,7 +8,7 @@ Unreleased
 Infrastructure
 ~~~~~~~~~~~~~~
 * added pytest 7.0 to CI tests
-
+* skip tests using ``pytest-xdist`` if it is not installed (see `#7`_)
 
 Fixes
 -----
@@ -126,3 +126,5 @@ New Features
 .. _`#1`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/1
 .. _`#2`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/2
 .. _`#3`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/3
+.. _`#6`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/6
+.. _`#7`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/7
