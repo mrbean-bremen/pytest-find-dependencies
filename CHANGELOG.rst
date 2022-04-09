@@ -2,17 +2,18 @@
 Changelog for pytest-find-dependencies
 ======================================
 
-Unreleased
-----------
+`0.5.2`_ (2022-04-09)
+---------------------
+Bugfix release.
+
+Fixes
+-----
+* Fix crash when multiple "always failing" tests are detected (see `#6`_)
 
 Infrastructure
 ~~~~~~~~~~~~~~
 * added pytest 7.0 to CI tests
 * skip tests using ``pytest-xdist`` if it is not installed (see `#7`_)
-
-Fixes
------
-* Fix crash when multiple "always failing" tests are detected (see `#6`_)
 
 
 `0.5.1`_ (2022-01-16)
