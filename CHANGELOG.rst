@@ -5,6 +5,11 @@ Changelog for pytest-find-dependencies
 Unreleased
 ----------
 
+Infrastructure
+~~~~~~~~~~~~~~
+* added Python 3.11to and removed Python 3.6 from CI tests
+* added pytest 7.2 to CI tests
+
 `0.5.2`_ (2022-04-09)
 ---------------------
 Bugfix release.
