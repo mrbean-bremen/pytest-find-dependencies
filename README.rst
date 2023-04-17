@@ -42,6 +42,13 @@ This will find most (but not all) test dependencies (the same way as
 a subset of all tests are run using binary search, until a test is found
 that causes the other test to fail.
 
+.. note::
+   I recently found out that there exists now another pytest plugin with similar
+   functionality, but with far better documentation, that is also far more popular:
+   `detect-test-pollution`_ by Anthony Sottile. I will probably continue to use
+   ``pytest-find-dependencies`` for my own projects, but encourage you to use that
+   project instead.
+
 Installation
 ------------
 
@@ -148,3 +155,4 @@ If you encounter any problems or have a feature request, please
 .. _`PyPI`: https://pypi.org/project
 .. _`pytest-randomly`: https://github.com/pytest-dev/pytest-randomly
 .. _`pytest-reverse`: https://github.com/adamchainz/pytest-reverse
+.. _`detect-test-pollution`: https://github.com/asottile/detect-test-pollution
