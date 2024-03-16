@@ -2,13 +2,14 @@
 Changelog for pytest-find-dependencies
 ======================================
 
-Unreleased
-----------
+`0.5.3`_ (2024-03-16)
+---------------------
+Adds compatibility to pytest 8.
 
 Infrastructure
 ~~~~~~~~~~~~~~
-* added Python 3.11to and removed Python 3.6 from CI tests
-* added pytest 7.2 to CI tests
+* added Python 3.11 and 3.12 to and removed Python 3.6 from CI tests
+* added pytest 7 and 8 to CI tests, adapted tests to work with pytest 8
 
 `0.5.2`_ (2022-04-09)
 ---------------------
@@ -16,7 +17,7 @@ Bugfix release.
 
 Fixes
 -----
-* Fix crash when multiple "always failing" tests are detected (see `#6`_)
+* fixed crash when multiple "always failing" tests are detected (see `#6`_)
 
 Infrastructure
 ~~~~~~~~~~~~~~
@@ -131,6 +132,8 @@ New Features
 .. _`0.4.1`: https://pypi.org/project/pytest-find-dependencies/0.4.1/
 .. _`0.5.0`: https://pypi.org/project/pytest-find-dependencies/0.5.0/
 .. _`0.5.1`: https://pypi.org/project/pytest-find-dependencies/0.5.1/
+.. _`0.5.2`: https://pypi.org/project/pytest-find-dependencies/0.5.2/
+.. _`0.5.3`: https://pypi.org/project/pytest-find-dependencies/0.5.3/
 .. _`#1`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/1
 .. _`#2`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/2
 .. _`#3`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/3
