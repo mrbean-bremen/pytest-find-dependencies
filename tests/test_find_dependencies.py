@@ -103,10 +103,10 @@ def test_single_dependency_collect_only(test_path):
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "collected 3 items",
-        "<Module test_one.py>",
-        "  <Function test_a>",
-        "  <Function test_b>",
-        "  <Function test_c>"
+        "*<Module test_one.py>",
+        "*  <Function test_a>",
+        "*  <Function test_b>",
+        "*  <Function test_c>"
     ])
 
 
