@@ -1,0 +1,67 @@
+[build-system]
+requires = [
+    "setuptools>=77.0.3",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytest-find-dependencies"
+description = "A pytest plugin to find dependencies between tests"
+readme = "README.rst"
+keywords = [
+    "testing",
+    "pytest",
+    "dependencies",
+]
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+dynamic = ["version"]
+dependencies = [
+    "pytest>=6.2.4",
+]
+authors = [
+    {name = "mrbean-bremen", email = "hansemrbean@googlemail.com"}
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Utilities",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest-randomly",
+    "pytest-xdist",
+]
+
+[project.urls]
+homepage = "https://github.com/mrbean-bremen/pytest-find-dependencies"
+repository = "https://github.com/mrbean-bremen/pytest-find-dependencies"
+changelog = "https://github.com/mrbean-bremen/pytest-find-dependencies/blob/main/CHANGELOG.rst"
+issues = "https://github.com/mrbean-bremen/pytest-find-dependencies/issues"
+
+[project.entry-points.pytest11]
+find_dependencies = "find_dependencies.plugin"
+
+[tool.setuptools.dynamic]
+version = {attr = "find_dependencies.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["find_dependencies*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

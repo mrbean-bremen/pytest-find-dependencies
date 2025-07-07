@@ -18,6 +18,9 @@ pytest-find-dependencies
     :target: https://codecov.io/gh/mrbean-bremen/pytest-find-dependencies
     :alt: Code coverage
 
+.. image:: https://img.shields.io/pypi/dw/pytest-find-dependencies
+   :alt: PyPI - Downloads
+
 A pytest plugin to find dependencies between tests.
 
 ----
@@ -45,9 +48,9 @@ that causes the other test to fail.
 .. note::
    I recently found out that there exists now another pytest plugin with similar
    functionality, but with far better documentation, that is also far more popular:
-   `detect-test-pollution`_ by Anthony Sottile. I will probably continue to use
-   ``pytest-find-dependencies`` for my own projects, but encourage you to use that
-   project instead.
+   `detect-test-pollution`_ by Anthony Sottile. I will continue to use
+   ``pytest-find-dependencies`` for my own projects, and certainly react to any
+   issues or feature requests, but encourage you to use that project instead.
 
 Installation
 ------------

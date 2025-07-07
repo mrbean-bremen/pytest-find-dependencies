@@ -2,6 +2,19 @@
 Changelog for pytest-find-dependencies
 ======================================
 
+Unreleased
+----------
+
+Changes
+~~~~~~~
+* added Python 3.13 and removed EOL Python 3.7 and 3.8 from CI tests
+* dropped support for pytest versions < 6.2.4
+
+Infrastructure
+~~~~~~~~~~~~~~
+* replaced ``setup.py``/``cfg`` by ``pyproject.toml``
+
+
 `0.5.3`_ (2024-03-16)
 ---------------------
 Adds compatibility to pytest 8.

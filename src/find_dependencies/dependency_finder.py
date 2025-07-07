@@ -7,9 +7,9 @@ CACHE_KEY_FAILED = "find_dependencies/failed_ids"
 
 
 class DependencyFinder:
-    """Tries to find dependencies between tests using reverse executing
-    first and more test executions using binary search to get dependent
-    tests."""
+    """Tries to find dependencies between tests using direct and reverse
+    execution first, and more test executions using binary search as needed
+    to detect dependent tests."""
 
     def __init__(self, session):
         self.session = session
@@ -48,7 +48,7 @@ class DependencyFinder:
             self.check_failed_item(item, items1)
 
         # tests failing in the second run have to checked if they fail
-        # permanently afterwards - in this case the we don't try to
+        # permanently afterward - in this case we don't try to
         # find the dependency
         for item in sorted(failed2, key=str):
             self.check_failed_item(item, items2, check_permanent=True)
