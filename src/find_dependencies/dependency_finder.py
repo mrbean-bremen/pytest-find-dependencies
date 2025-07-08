@@ -84,14 +84,7 @@ class DependencyFinder:
         self.session.testsfailed = (len(self.dependent_items) +
                                     len(self.permanently_failed_items))
         if self.session.testsfailed:
-            try:
-                # pytest >= 5
-                from pytest import ExitCode
-                tests_failed = ExitCode.TESTS_FAILED
-            except ImportError:
-                # pytest < 5
-                from _pytest.main import EXIT_TESTSFAILED
-                tests_failed = EXIT_TESTSFAILED
+            tests_failed = pytest.ExitCode.TESTS_FAILED
             self.session.exitstatus = tests_failed
 
     def check_failed_item(self, item, items, failed=True,
