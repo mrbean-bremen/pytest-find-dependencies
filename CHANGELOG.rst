@@ -10,6 +10,15 @@ Changes
 * added Python 3.13 and removed EOL Python 3.7 and 3.8 from CI tests
 * dropped support for pytest versions < 6.2.4
 
+New Features
+~~~~~~~~~~~~
+* individual test runs are now by default run in parallel for each stage
+  to speed up overall test run time
+* added option ``--run-serially``, which restores the old behavior in case
+  of problems with parallel runs
+* added option ``--fail-on-failed-tests``, which let the dependency test fail
+  if any test fails, even if no dependencies are found
+
 Infrastructure
 ~~~~~~~~~~~~~~
 * replaced ``setup.py``/``cfg`` by ``pyproject.toml``

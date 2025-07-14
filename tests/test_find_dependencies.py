@@ -13,6 +13,15 @@ def test_path(testdir):
     yield testdir
 
 
+@pytest.fixture(params=[[], ["--run-serially"]], ids=["parallel", "serial"])
+def serial_option(request):
+    return request.param
+
+
+def run_test(test_path, args):
+    return test_path.runpytest(*args)
+
+
 def test_no_checks_if_not_configured(test_path):
     test_path.makepyfile(
         test_one="""
@@ -67,7 +76,7 @@ def test_no_checks_if_collection_failed(test_path):
     ])
 
 
-def test_no_dependencies(test_path):
+def test_no_dependencies(test_path, serial_option):
     test_path.makepyfile(
         test_one="""
         def test_a(): pass
@@ -77,7 +86,7 @@ def test_no_dependencies(test_path):
         """
     )
 
-    result = test_path.runpytest("--find-dependencies")
+    result = run_test(test_path, ["--find-dependencies"] + serial_option)
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "The following tests are always failing and are "
@@ -85,6 +94,31 @@ def test_no_dependencies(test_path):
         "  test_one.py::test_b",
         "  test_one.py::test_d",
         "No dependent tests found."
+    ])
+
+
+def test_no_dependencies_fail_on_failed_tests(test_path, serial_option):
+    test_path.makepyfile(
+        test_one="""
+        def test_a(): pass
+        def test_b(): assert False
+        def test_c(): pass
+        def test_d(): assert False
+        """
+    )
+
+    result = run_test(test_path,
+                      ["--find-dependencies", "--fail-on-failed-tests"]
+                      + serial_option
+                      )
+    assert int(result.ret) == 1
+    result.stdout.fnmatch_lines([
+        "The following tests are always failing and are "
+        "excluded from the analysis:",
+        "  test_one.py::test_b",
+        "  test_one.py::test_d",
+        "No dependent tests found.",
+        "Failed because of failing tests."
     ])
 
 
@@ -152,7 +186,7 @@ def test_single_dependency_last_index(test_path):
     ])
 
 
-def test_single_dependency_first_index(test_path):
+def test_single_dependency_first_index(test_path, serial_option):
     test_path.makepyfile(
         test_one="""
         flag = True
@@ -162,7 +196,11 @@ def test_single_dependency_first_index(test_path):
         """
     )
 
-    result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    result = run_test(test_path,
+                      ["--find-dependencies", "--fail-on-failed-tests",
+                       "-p", "no:randomly"]
+                      + serial_option
+                      )
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 3 tests.",
@@ -193,7 +231,7 @@ def test_single_dependency1(test_path):
     ])
 
 
-def test_single_reversed_first(test_path):
+def test_single_reversed_first(test_path, serial_option):
     test_path.makepyfile(
         test_one="""
         flag = True
@@ -204,8 +242,8 @@ def test_single_reversed_first(test_path):
         """
     )
 
-    result = test_path.runpytest("--find-dependencies", "--reversed-first",
-                                 "-p", "no:randomly")
+    result = run_test(test_path, ["--find-dependencies", "--reversed-first",
+                                  "-p", "no:randomly"] + serial_option)
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 4 tests.",
@@ -265,7 +303,7 @@ def test_single_dependency3(test_path):
     ])
 
 
-def test_single_dependency1_with_randomly(test_path):
+def test_single_dependency1_with_randomly(test_path, serial_option):
     test_path.makepyfile(
         test_one="""
         flag = True
@@ -276,7 +314,7 @@ def test_single_dependency1_with_randomly(test_path):
         """
     )
 
-    result = test_path.runpytest("--find-dependencies")
+    result = run_test(test_path, ["--find-dependencies"] + serial_option)
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 4 tests.",
@@ -333,7 +371,7 @@ def test_single_dependency3_with_randomly(test_path):
     ])
 
 
-def test_two_dependencies(test_path):
+def test_two_dependencies(test_path, serial_option):
     test_path.makepyfile(
         test_one="""
         flag = True
@@ -346,18 +384,20 @@ def test_two_dependencies(test_path):
         """
     )
 
-    result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    result = run_test(
+        test_path, ["--find-dependencies", "-p", "no:randomly"] + serial_option
+    )
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 6 tests.",
         "Executed 21 tests in 7 test runs.",
         "Dependent tests:",
+        "  test_one.py::test_d depends on test_one.py::test_e",
         "  test_one.py::test_b depends on test_one.py::test_e",
-        "  test_one.py::test_d depends on test_one.py::test_e"
     ])
 
 
-def test_single_dependency_in_other_module1(test_path):
+def test_single_dependency_in_other_module1(test_path, serial_option):
     test_path.makepyfile(
         test_one="""
         import util
@@ -379,7 +419,9 @@ def test_single_dependency_in_other_module1(test_path):
         """
     )
 
-    result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    result = run_test(
+        test_path, ["--find-dependencies", "-p", "no:randomly"] + serial_option
+    )
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 7 tests.",
@@ -442,7 +484,8 @@ def test_permanent_dependency(test_path):
             return os.path.exists("lock.lck")
         """
     )
-    result = test_path.runpytest("--find-dependencies", "-p", "no:randomly")
+    result = test_path.runpytest("--find-dependencies", "-p", "no:randomly",
+                                 "--run-serially")
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 5 tests.",
@@ -475,7 +518,7 @@ def test_permanent_dependency_reversed_first(test_path):
         """
     )
     result = test_path.runpytest("--find-dependencies", "--reversed-first",
-                                 "-p", "no:randomly")
+                                 "-p", "no:randomly", "--run-serially")
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 5 tests.",
@@ -514,7 +557,7 @@ def test_ignored_tests_with_marker_no_dependency(test_path):
     ])
 
 
-def test_filenames(test_path):
+def test_filenames(test_path, serial_option):
     test_path.makepyfile(
         test_one="""
         def test_a(): print("one::a")
@@ -530,8 +573,10 @@ def test_filenames(test_path):
         """
     )
 
-    result = test_path.runpytest(
-        "--find-dependencies", "test_one.py", "test_three.py")
+    result = run_test(
+        test_path,
+        serial_option + ["--find-dependencies", "test_one.py", "test_three.py"]
+    )
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
         "Run dependency analysis for 4 tests.",
@@ -557,7 +602,7 @@ def test_passed_arguments(test_path):
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines([
         "Running pytest with arguments --find-dependencies-internal "
-        "-n0 -p no:randomly -v -s *",
+        "--find-dependencies-index=0 -n0 -p no:randomly -v -s *",
         "Run dependency analysis for 3 tests.",
         "Executed 7 tests in 3 test runs.",
         "Dependent tests:",
@@ -624,16 +669,16 @@ def test_removed_xdist_args(test_path):
         """
     )
 
-    result = test_path.runpytest(
-        "--find-dependencies", "-n", "2", "-s")
+    result = test_path.runpytest("--find-dependencies", "-n", "2", "-s")
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
-        "Running pytest with arguments --find-dependencies-internal -n0 -s *",
+        "Running pytest with arguments --find-dependencies-internal "
+        "--find-dependencies-index=0 -n0 -s *",
     ])
 
-    result = test_path.runpytest(
-        "--find-dependencies", "-n3", "-v")
+    result = test_path.runpytest("--find-dependencies", "-n3", "-v")
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines([
-        "Running pytest with arguments --find-dependencies-internal -n0 -v *",
+        "Running pytest with arguments --find-dependencies-internal "
+        "--find-dependencies-index=0 -n0 -v *",
     ])

@@ -48,9 +48,9 @@ that causes the other test to fail.
 .. note::
    I recently found out that there exists now another pytest plugin with similar
    functionality, but with far better documentation, that is also far more popular:
-   `detect-test-pollution`_ by Anthony Sottile. I will continue to use
-   ``pytest-find-dependencies`` for my own projects, and certainly react to any
-   issues or feature requests, but encourage you to use that project instead.
+   `detect-test-pollution`_ by Anthony Sottile. I will continue to use and develop
+   ``pytest-find-dependencies``, and certainly react to any issues or feature requests,
+   but encourage you to try out that project instead.
 
 Installation
 ------------
@@ -92,16 +92,37 @@ Dependencies due to a permanent change will only be found if the offending
 test is run before the dependent test, otherwise the test will just fail both
 times.
 
-The option ``--reversed-first`` allows you to reverse the sequence of the
-first two test runs.
+Options
+-------
 
-The option ``--markers-to-ignore`` allows to define a comma-separated list
-of marker names. Tests that have these markers will be ignored in the
-analysis (e.g. not run at all). This can be used to exclude tests that have
-markers that define the test order. Examples include ``dependency`` (from the
-``pytest-dependency`` plugin), ``order`` (from ``pytest-order``) or
-``depends`` (from ``pytest-depends``). To ignore all tests with a
-``dependency`` marker, you can use::
+``--run-serially``
+~~~~~~~~~~~~~~~~~~
+By default, the forward and reversed test runs are executed in parallel in
+separate processes. The option ``--run-serially`` allows to change this
+behavior to run all tests sequentially. This increases the overall runtime,
+but sometimes may reveal permanent changes not reliably found in the default
+mode.
+
+``--reversed-first``
+~~~~~~~~~~~~~~~~~~~~
+This option allows you to reverse the sequence of the first two test runs.
+Note that it only makes sense in combination with ``--run-serially``, as per
+default these test runs are executed in parallel.
+
+``--fail-on-failed-tests``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Per default, the dependency test only returns the exit code 1, if any
+dependency has been found, otherwise 0. This option changes this behavior -
+any failing test will also fail the dependency test (e.g. the exit code will be 1).
+
+``--markers-to-ignore``
+~~~~~~~~~~~~~~~~~~~~~~~
+This option allows to define a comma-separated list of marker names. Tests that
+have these markers will be ignored in the analysis (e.g. not run at all).
+This can be used to exclude tests that have markers that define the test order.
+Examples include ``dependency`` (from the ``pytest-dependency`` plugin), ``order``
+(from ``pytest-order``) or ``depends`` (from ``pytest-depends``). To ignore all
+tests with a ``dependency`` marker, you can use::
 
   python -m pytest --find-dependencies --markers-to-ignore=dependency
 
@@ -113,14 +134,13 @@ Notes
 - command line options given in the test are passed to all test runs
   in dependency find mode
 - if any dependent tests are found, the exit code of the pytest run will be
-  set to 1
+  set to 1, see also the option ``--fail-on-failed-tests`` above
 - if ``pytest-xdist`` is detected, it is ensured that the internal tests
-  are not distributed, as this would break the dependency check
-- if no dependent tests are found, the test will run twice as long as without
-  the option (because each test will be executed twice), with one dependent
-  test it will take about three times as long as the original tests, and with
-  each found dependent test it will take more time (e.g. more repeated tests)
-
+  are *not* distributed, as this would break the dependency check
+- if no dependent tests are found, the test will run a bit longer than the original
+  tests (without xdist), with the option ``--run-serially`` about twice as long;
+  with one dependent test it will take about 1.5 times as long as the original tests, and with
+  each found dependent test it will take more time (due to more repeated tests)
 
 Usage of ordering plugins
 -------------------------
@@ -129,7 +149,7 @@ be applied in the first test run. The order of the following test runs is
 solely defined by ``pytest-find-dependencies``. This means that if you use
 ordering plugins like ``pytest-order``, the dependencies will still be
 found, if you don't exclude these tests (which may or may not be wanted).
-Using ``pytest-randomly`` will randomize the first test run and can be used
+Using ``pytest-randomly`` will randomize only the first test run and can be used
 in combination with ``pytest-find-dependencies`` without problems.
 
 Contributing
