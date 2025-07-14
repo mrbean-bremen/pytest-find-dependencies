@@ -38,20 +38,25 @@ class DependencyFinder:
             items1, items2 = reversed_items, items
         else:
             items1, items2 = items, reversed_items
-        failed1 = self.run_tests(items1)
-        failed2 = self.run_tests(items2)
+
+        if self.session.config.getoption("run_serially"):
+            failed1 = self.run_tests(items1)
+            failed2 = self.run_tests(items2)
+        else:
+            failed1, failed2 = self.run_tests_in_parallel([items1, items2])
         always_failing_items = failed1.intersection(failed2)
 
         # tests failing in both runs are not considered
         failed1, failed2 = failed1 - failed2, failed2 - failed1
-        for item in sorted(failed1, key=str):
-            self.check_failed_item(item, items1)
+        self.check_failed_items(sorted(failed1, key=str),
+                                [items1] * len(failed1))
 
-        # tests failing in the second run have to checked if they fail
+        # tests failing in the second run have to be checked if they fail
         # permanently afterward - in this case we don't try to
         # find the dependency
-        for item in sorted(failed2, key=str):
-            self.check_failed_item(item, items2, check_permanent=True)
+        self.check_failed_items(sorted(failed2, key=str),
+                                [items2] * len(failed2),
+                                check_permanent=True)
         print()
         print("=" * 30, "Results", "=" * 31)
         print(f"Run dependency analysis for {len(items1)} tests.")
@@ -66,6 +71,9 @@ class DependencyFinder:
         failed = self.dependent_items or self.permanently_failed_items
         if not failed:
             print("No dependent tests found.")
+            if (always_failing_items and
+                    self.session.config.getoption("fail_on_failed_tests")):
+                print("Failed because of failing tests.")
         else:
             if self.permanently_failed_items:
                 print("Tests failing permanently after all tests have run:")
@@ -77,59 +85,112 @@ class DependencyFinder:
                     print(f"  {item.nodeid} depends on {dependent.nodeid}")
         print(f"\nDependency test {'FAILED' if failed else 'PASSED'}")
         print("=" * 70)
-        self.set_exitstatus()
+        self.set_exitstatus(always_failing_items)
 
-    def set_exitstatus(self):
+    def set_exitstatus(self, always_failing_items):
         """Set the exitstatus to failed if dependent tests where found."""
         self.session.testsfailed = (len(self.dependent_items) +
                                     len(self.permanently_failed_items))
+
+        if (always_failing_items and
+                self.session.config.getoption("fail_on_failed_tests")):
+            self.session.testsfailed += len(always_failing_items)
         if self.session.testsfailed:
             tests_failed = pytest.ExitCode.TESTS_FAILED
             self.session.exitstatus = tests_failed
 
-    def check_failed_item(self, item, items, failed=True,
-                          check_permanent=False):
-        if check_permanent and item in self.run_tests([item]):
-            self.permanently_failed_items.append(item)
+    def check_failed_items(self, failed_items, item_lists, failed=None,
+                           check_permanent=False):
+        if not failed_items:
             return
-        index = items.index(item)
-        if failed:
-            if index == 1:
-                self.dependent_items[item] = items[0]
-                return
-            mid_index = index // 2
-            sub_items_to_run = items[:mid_index] + [items[index]]
-            sub_items = sub_items_to_run + items[mid_index:index]
-        else:
-            if index == len(items) - 2:
-                self.dependent_items[item] = items[index + 1]
-                return
-            mid_index = index + 1 + (len(items) - index - 1) // 2
-            sub_items_to_run = items[index + 1:mid_index] + [items[index]]
-            sub_items = sub_items_to_run + items[mid_index:]
+        if check_permanent:
+            if self.session.config.getoption("run_serially"):
+                failed_item_list = [
+                    self.run_tests([item]) for item in failed_items]
+            else:
+                failed_item_list = self.run_tests_in_parallel(
+                    [item] for item in failed_items)
 
-        failed_items = self.run_tests(sub_items_to_run)
-        self.check_failed_item(item, sub_items, item in failed_items)
+            for failed_item_set in failed_item_list:
+                if failed_item_set:
+                    failed_item = failed_item_set.pop()
+                    self.permanently_failed_items.append(failed_item)
+                    # if failed_item in failed_items:
+                    failed_items.remove(failed_item)
+
+        items_to_run = []
+        all_items = []
+        for item_index, (failed_item, items) in enumerate(
+                zip(failed_items, item_lists)):
+            index = items.index(failed_item)
+            last_failed = failed is None
+            if not last_failed:
+                last_failed = failed[item_index]
+            if last_failed:
+                if index == 1:
+                    self.dependent_items[failed_item] = items[0]
+                    # if failed_item in failed_items:
+                    failed_items.remove(failed_item)
+                    continue
+                mid_index = index // 2
+                sub_items_to_run = items[:mid_index] + [items[index]]
+                sub_items = sub_items_to_run + items[mid_index:index]
+            else:
+                if index == len(items) - 2:
+                    self.dependent_items[failed_item] = items[index + 1]
+                    failed_items.remove(failed_item)
+                    continue
+                mid_index = index + 1 + (len(items) - index - 1) // 2
+                sub_items_to_run = items[index + 1:mid_index] + [items[index]]
+                sub_items = sub_items_to_run + items[mid_index:]
+            items_to_run.append(sub_items_to_run)
+            all_items.append(sub_items)
+
+        if self.session.config.getoption("run_serially"):
+            failed_item_list = [self.run_tests(item) for item in items_to_run]
+        else:
+            failed_item_list = self.run_tests_in_parallel(items_to_run)
+        item_failed = [item in failed_items for item, failed_items
+                       in zip(failed_items, failed_item_list)]
+        self.check_failed_items(failed_items, all_items, item_failed)
+
+    def run_tests_in_parallel(self, item_lists):
+        processes = []
+        item_ids = []
+        for index, items in enumerate(item_lists):
+            item_ids.append({item.nodeid: item for item in items})
+            self.session.config.cache.set(f"{CACHE_KEY_IDS}{index}",
+                                          list(item_ids[index].keys()))
+            args = [
+                "--find-dependencies-internal",
+                f"--find-dependencies-index={index}",
+            ]
+            if hasattr(self.session.config, "initial_args"):
+                args += self.session.config.initial_args
+            print(f"Running pytest with arguments {' '.join(args)}")
+            p = Process(target=pytest.main, args=[args])
+            processes.append(p)
+            p.start()
+            self.test_runs += 1
+            self.test_number += len(items)
+
+        failed_items = []
+        for index, p in enumerate(processes):
+            p.join()
+            failed_node_ids = self.session.config.cache.get(
+                f"{CACHE_KEY_FAILED}{index}", [])
+            items = item_ids[index]
+            failed_items.append(set(items[key] for key in items
+                                    if key in failed_node_ids))
+        return failed_items
 
     def run_tests(self, items):
-        items = {item.nodeid: item for item in items}
-        self.session.config.cache.set(CACHE_KEY_IDS, list(items.keys()))
-        args = ["--find-dependencies-internal"]
-        if hasattr(self.session.config, "initial_args"):
-            args += self.session.config.initial_args
-        print(f"Running pytest with arguments {' '.join(args)}")
-        p = Process(target=pytest.main, args=[args])
-        p.start()
-        p.join()
-        failed_node_ids = self.session.config.cache.get(CACHE_KEY_FAILED, [])
-        self.test_runs += 1
-        self.test_number += len(items)
-        return set(items[key] for key in items if key in failed_node_ids)
+        return self.run_tests_in_parallel([items])[0]
 
 
-def run_tests(session):
+def run_tests(session, run_index):
     all_items = {item.nodeid: item for item in session.items}
-    node_ids = session.config.cache.get(CACHE_KEY_IDS, [])
+    node_ids = session.config.cache.get(f"{CACHE_KEY_IDS}{run_index}", [])
     items = [all_items[node_id] for node_id in node_ids
              if node_id in all_items]
     failed_node_ids = []
@@ -140,7 +201,8 @@ def run_tests(session):
                                                  nextitem=next_item)
         if session.testsfailed > test_failed:
             failed_node_ids.append(item.nodeid)
-    session.config.cache.set(CACHE_KEY_FAILED, failed_node_ids)
+    session.config.cache.set(f"{CACHE_KEY_FAILED}{run_index}", failed_node_ids)
+
     # clear the items - otherwise the tests will be run again by
     # pytest's own pytest_runtestloop
     session.items.clear()

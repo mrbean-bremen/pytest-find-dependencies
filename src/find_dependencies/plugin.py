@@ -20,6 +20,19 @@ def pytest_addoption(parser):
         help="""Run the test in reverse direction first""",
     )
     group.addoption(
+        "--run-serially",
+        action="store_true",
+        dest="run_serially",
+        help="""Execute all test runs serially instead
+         of using parallel processes""",
+    )
+    group.addoption(
+        "--fail-on-failed-tests",
+        action="store_true",
+        dest="fail_on_failed_tests",
+        help="""Let the dependency test also fail for always failing tests""",
+    )
+    group.addoption(
         "--markers-to-ignore",
         action="store",
         dest="markers_to_ignore",
@@ -31,11 +44,18 @@ def pytest_addoption(parser):
         dest="find_dependencies_internal",
         help="""For internal use only""",
     )
+    group.addoption(
+        "--find-dependencies-index",
+        action="store",
+        dest="find_dependencies_index",
+        help="""For internal use only""",
+    )
 
 
 def pytest_runtestloop(session):
     if session.config.getoption("find_dependencies_internal"):
-        return run_tests(session)
+        index = session.config.getoption("find_dependencies_index") or ""
+        return run_tests(session, index)
     if not session.config.getoption("find_dependencies"):
         return pytest_main.pytest_runtestloop(session)
 
