@@ -22,6 +22,7 @@ New Features
 Infrastructure
 ~~~~~~~~~~~~~~
 * replaced ``setup.py``/``cfg`` by ``pyproject.toml``
+* use pre-commit instead of linter in workflow
 
 
 `0.5.3`_ (2024-03-16)
@@ -99,7 +100,7 @@ New Features
 ~~~~~~~~~~~~
 * added the option ``--markers-to-ignore`` to allow to ignore tests with
   ordering markers
-  
+
 Infrastructure
 ~~~~~~~~~~~~~~
 * add tests for Python 3.10

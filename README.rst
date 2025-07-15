@@ -144,7 +144,7 @@ Notes
 
 Usage of ordering plugins
 -------------------------
-If you use plugins which change the test order using markers, theses will only
+If you use plugins which change the test order using markers, these will only
 be applied in the first test run. The order of the following test runs is
 solely defined by ``pytest-find-dependencies``. This means that if you use
 ordering plugins like ``pytest-order``, the dependencies will still be
