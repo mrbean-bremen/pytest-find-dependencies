@@ -64,11 +64,9 @@ def pytest_runtestloop(session):
         restore_verbosity(session.config)
         return pytest_main.pytest_runtestloop(session)
 
-    if (session.testsfailed and
-            not session.config.option.continue_on_collection_errors):
+    if session.testsfailed and not session.config.option.continue_on_collection_errors:
         restore_verbosity(session.config)
-        raise session.Interrupted(
-            "%d errors during collection" % session.testsfailed)
+        raise session.Interrupted("%d errors during collection" % session.testsfailed)
 
     DependencyFinder(session).find_dependencies()
     return True
@@ -85,7 +83,7 @@ def restore_verbosity(config):
                 verbosity = 1 - len(arg)
                 break
             if arg.startswith("--verbosity="):
-                verbosity = int(arg[arg.index("=") + 1:])
+                verbosity = int(arg[arg.index("=") + 1 :])
                 break
     config.option.verbose = verbosity
 

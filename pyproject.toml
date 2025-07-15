@@ -45,6 +45,7 @@ classifiers = [
 dev = [
     "pytest-randomly",
     "pytest-xdist",
+    "pre-commit>=4.1.4",
 ]
 
 [project.urls]
