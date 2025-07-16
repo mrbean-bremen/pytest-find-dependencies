@@ -1,11 +1,20 @@
 import re
 import sys
+from typing import Optional
 
+import pytest
 from _pytest import main as pytest_main
 from find_dependencies.dependency_finder import DependencyFinder, run_tests
 
+try:
+    import pytest.Parser as Parser
+    import pytest.Config as Config
+except ImportError:
+    from _pytest.config.argparsing import Parser
+    from _pytest.config import Config
 
-def pytest_addoption(parser):
+
+def pytest_addoption(parser: Parser) -> None:
     group = parser.getgroup("find-dependencies")
     group.addoption(
         "--find-dependencies",
@@ -52,7 +61,7 @@ def pytest_addoption(parser):
     )
 
 
-def pytest_runtestloop(session):
+def pytest_runtestloop(session: pytest.Session) -> Optional[object]:
     if session.config.getoption("find_dependencies_internal"):
         index = session.config.getoption("find_dependencies_index") or ""
         return run_tests(session, index)
@@ -72,7 +81,7 @@ def pytest_runtestloop(session):
     return True
 
 
-def restore_verbosity(config):
+def restore_verbosity(config: Config) -> None:
     verbosity = 0
     if hasattr(config, "initial_args"):
         for arg in config.initial_args:
@@ -88,7 +97,7 @@ def restore_verbosity(config):
     config.option.verbose = verbosity
 
 
-def pytest_load_initial_conftests(early_config, args):
+def pytest_load_initial_conftests(early_config: Config, args: list[str]) -> None:
     """Saves initial arguments to be passed to the test runs."""
     if "--find-dependencies" in args:
         notest_options = ("--collect-only", "--setup-only", "--setup-plan")
@@ -104,7 +113,7 @@ def pytest_load_initial_conftests(early_config, args):
         adapt_verbosity(args)
 
 
-def adapt_verbosity(args):
+def adapt_verbosity(args: list[str]) -> None:
     """Removes verbosity arguments from the outer test and replaces them
     with -qq (very quiet) to avoid confusing information ("no tests run").
     The given verbosity will still be passed to the internal test runs."""
@@ -115,7 +124,7 @@ def adapt_verbosity(args):
         args.insert(0, "-qq")
 
 
-def disable_xdist(args):
+def disable_xdist(args: list[str]) -> None:
     for i, arg in enumerate(args):
         # remove -n # option
         if arg == "-n":
