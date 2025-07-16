@@ -1,5 +1,5 @@
 default_language_version:
-  python: "3.10"
+  python: "3.9"
 
 repos:
   - repo: "https://github.com/asottile/pyupgrade"
@@ -41,3 +41,8 @@ repos:
         args: ["--in-place", "--remove-unused-variables", "--remove-all-unused-imports"]
         language: python
         files: \.py$
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.16.1
+    hooks:
+      - id: mypy
+        exclude: (docs|pyfakefs/tests)

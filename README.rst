@@ -14,6 +14,10 @@ pytest-find-dependencies
     :target: https://github.com/mrbean-bremen/pytest-find-dependencies/actions?query=workflow%3ATestsuite
     :alt: Test suite
 
+.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
+   :target: https://github.com/mrbean-bremen/pytest-find-dependencies
+   :alt: pre-commit
+
 .. image:: https://codecov.io/gh/mrbean-bremen/pytest-find-dependencies/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/mrbean-bremen/pytest-find-dependencies
     :alt: Code coverage

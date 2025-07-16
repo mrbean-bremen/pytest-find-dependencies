@@ -1,4 +1,5 @@
 from multiprocessing import Process
+from typing import Optional
 
 import pytest
 
@@ -11,14 +12,14 @@ class DependencyFinder:
     execution first, and more test executions using binary search as needed
     to detect dependent tests."""
 
-    def __init__(self, session):
+    def __init__(self, session: pytest.Session) -> None:
         self.session = session
-        self.dependent_items = {}
-        self.permanently_failed_items = []
+        self.dependent_items: dict[pytest.Item, pytest.Item] = {}
+        self.permanently_failed_items: list[pytest.Item] = []
         self.test_runs = 0
         self.test_number = 0
 
-    def find_dependencies(self):
+    def find_dependencies(self) -> None:
         items = self.session.items
         ignored_markers = (
             self.session.config.getoption("markers_to_ignore") or ""
@@ -89,7 +90,7 @@ class DependencyFinder:
         print("=" * 70)
         self.set_exitstatus(always_failing_items)
 
-    def set_exitstatus(self, always_failing_items):
+    def set_exitstatus(self, always_failing_items: set[pytest.Item]) -> None:
         """Set the exitstatus to failed if dependent tests where found."""
         self.session.testsfailed = len(self.dependent_items) + len(
             self.permanently_failed_items
@@ -104,8 +105,12 @@ class DependencyFinder:
             self.session.exitstatus = tests_failed
 
     def check_failed_items(
-        self, failed_items, item_lists, failed=None, check_permanent=False
-    ):
+        self,
+        failed_items: list[pytest.Item],
+        item_lists: list[list[pytest.Item]],
+        failed: Optional[list[bool]] = None,
+        check_permanent: bool = False,
+    ) -> None:
         if not failed_items:
             return
         if check_permanent:
@@ -113,7 +118,7 @@ class DependencyFinder:
                 failed_item_list = [self.run_tests([item]) for item in failed_items]
             else:
                 failed_item_list = self.run_tests_in_parallel(
-                    [item] for item in failed_items
+                    [[item] for item in failed_items]
                 )
 
             for failed_item_set in failed_item_list:
@@ -129,9 +134,10 @@ class DependencyFinder:
             zip(failed_items, item_lists)
         ):
             index = items.index(failed_item)
-            last_failed = failed is None
-            if not last_failed:
+            if failed is not None:
                 last_failed = failed[item_index]
+            else:
+                last_failed = True
             if last_failed:
                 if index == 1:
                     self.dependent_items[failed_item] = items[0]
@@ -162,13 +168,15 @@ class DependencyFinder:
         ]
         self.check_failed_items(failed_items, all_items, item_failed)
 
-    def run_tests_in_parallel(self, item_lists):
+    def run_tests_in_parallel(
+        self, item_lists: list[list[pytest.Item]]
+    ) -> list[set[pytest.Item]]:
         processes = []
-        item_ids = []
+        item_id_maps: list[dict[str, pytest.Item]] = []
         for index, items in enumerate(item_lists):
-            item_ids.append({item.nodeid: item for item in items})
+            item_id_maps.append({item.nodeid: item for item in items})
             self.session.config.cache.set(
-                f"{CACHE_KEY_IDS}{index}", list(item_ids[index].keys())
+                f"{CACHE_KEY_IDS}{index}", list(item_id_maps[index].keys())
             )
             args = [
                 "--find-dependencies-internal",
@@ -189,15 +197,17 @@ class DependencyFinder:
             failed_node_ids = self.session.config.cache.get(
                 f"{CACHE_KEY_FAILED}{index}", []
             )
-            items = item_ids[index]
-            failed_items.append({items[key] for key in items if key in failed_node_ids})
+            item_id_map = item_id_maps[index]
+            failed_items.append(
+                {item_id_map[key] for key in item_id_map if key in failed_node_ids}
+            )
         return failed_items
 
-    def run_tests(self, items):
+    def run_tests(self, items: list[pytest.Item]) -> set[pytest.Item]:
         return self.run_tests_in_parallel([items])[0]
 
 
-def run_tests(session, run_index):
+def run_tests(session: pytest.Session, run_index: str) -> None:
     all_items = {item.nodeid: item for item in session.items}
     node_ids = session.config.cache.get(f"{CACHE_KEY_IDS}{run_index}", [])
     items = [all_items[node_id] for node_id in node_ids if node_id in all_items]
