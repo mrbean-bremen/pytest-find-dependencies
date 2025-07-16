@@ -2,8 +2,9 @@
 Changelog for pytest-find-dependencies
 ======================================
 
-Unreleased
-----------
+`0.6.0`_ (2025-07-16)
+---------------------
+Improves test performance.
 
 Changes
 ~~~~~~~
@@ -157,6 +158,7 @@ New Features
 .. _`0.5.1`: https://pypi.org/project/pytest-find-dependencies/0.5.1/
 .. _`0.5.2`: https://pypi.org/project/pytest-find-dependencies/0.5.2/
 .. _`0.5.3`: https://pypi.org/project/pytest-find-dependencies/0.5.3/
+.. _`0.6.0`: https://pypi.org/project/pytest-find-dependencies/0.6.0/
 .. _`#1`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/1
 .. _`#2`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/2
 .. _`#3`: https://github.com/mrbean-bremen/pytest-find-dependencies/issues/3
