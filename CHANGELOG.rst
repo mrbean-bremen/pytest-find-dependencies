@@ -2,6 +2,13 @@
 Changelog for pytest-find-dependencies
 ======================================
 
+Unreleased
+----------
+
+Changes
+~~~~~~~
+* added Python 3.14 and removed EOL Python 3.9 from CI tests
+
 `0.6.0`_ (2025-07-16)
 ---------------------
 Improves test performance.
