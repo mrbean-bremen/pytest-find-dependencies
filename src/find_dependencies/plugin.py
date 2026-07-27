@@ -4,14 +4,14 @@ from typing import Optional
 
 import pytest
 from _pytest import main as pytest_main
+
 from find_dependencies.dependency_finder import DependencyFinder, run_tests
 
 try:
-    import pytest.Parser as Parser
-    import pytest.Config as Config
+    from pytest import Config, Parser
 except ImportError:
-    from _pytest.config.argparsing import Parser
     from _pytest.config import Config
+    from _pytest.config.argparsing import Parser
 
 
 def pytest_addoption(parser: Parser) -> None:
