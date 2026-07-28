@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import re
 import sys
-from typing import Optional
 
 import pytest
 from _pytest import main as pytest_main
@@ -61,7 +62,7 @@ def pytest_addoption(parser: Parser) -> None:
     )
 
 
-def pytest_runtestloop(session: pytest.Session) -> Optional[object]:
+def pytest_runtestloop(session: pytest.Session) -> object | None:
     if session.config.getoption("find_dependencies_internal"):
         index = session.config.getoption("find_dependencies_index") or ""
         return run_tests(session, index)
@@ -75,7 +76,7 @@ def pytest_runtestloop(session: pytest.Session) -> Optional[object]:
 
     if session.testsfailed and not session.config.option.continue_on_collection_errors:
         restore_verbosity(session.config)
-        raise session.Interrupted("%d errors during collection" % session.testsfailed)
+        raise session.Interrupted(f"{session.testsfailed} errors during collection")
 
     DependencyFinder(session).find_dependencies()
     return True

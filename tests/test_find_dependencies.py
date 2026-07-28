@@ -91,8 +91,10 @@ def test_no_dependencies(test_path, serial_option):
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines(
         [
-            "The following tests are always failing and are "
-            "excluded from the analysis:",
+            (
+                "The following tests are always failing and are "
+                "excluded from the analysis:"
+            ),
             "  test_one.py::test_b",
             "  test_one.py::test_d",
             "No dependent tests found.",
@@ -116,8 +118,10 @@ def test_no_dependencies_fail_on_failed_tests(test_path, serial_option):
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines(
         [
-            "The following tests are always failing and are "
-            "excluded from the analysis:",
+            (
+                "The following tests are always failing and are "
+                "excluded from the analysis:"
+            ),
             "  test_one.py::test_b",
             "  test_one.py::test_d",
             "No dependent tests found.",
@@ -565,8 +569,10 @@ def test_permanent_dependency_reversed_first(test_path):
         [
             "Run dependency analysis for 5 tests.",
             "Executed 10 tests in 2 test runs.",
-            "The following tests are always failing and are "
-            "excluded from the analysis:",
+            (
+                "The following tests are always failing and are "
+                "excluded from the analysis:"
+            ),
             "  test_one.py::test_b",
             "No dependent tests found.",
         ]
@@ -651,8 +657,10 @@ def test_passed_arguments(test_path):
     assert int(result.ret) == 1
     result.stdout.fnmatch_lines(
         [
-            "Running pytest with arguments --find-dependencies-internal "
-            "--find-dependencies-index=0 -n0 -p no:randomly -v -s *",
+            (
+                "Running pytest with arguments --find-dependencies-internal "
+                "--find-dependencies-index=0 -n0 -p no:randomly -v -s *"
+            ),
             "Run dependency analysis for 3 tests.",
             "Executed 7 tests in 3 test runs.",
             "Dependent tests:",
@@ -724,8 +732,10 @@ def test_removed_xdist_args(test_path):
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines(
         [
-            "Running pytest with arguments --find-dependencies-internal "
-            "--find-dependencies-index=0 -n0 -s *",
+            (
+                "Running pytest with arguments --find-dependencies-internal "
+                "--find-dependencies-index=0 -n0 -s *"
+            ),
         ]
     )
 
@@ -733,7 +743,9 @@ def test_removed_xdist_args(test_path):
     assert int(result.ret) == 0
     result.stdout.fnmatch_lines(
         [
-            "Running pytest with arguments --find-dependencies-internal "
-            "--find-dependencies-index=0 -n0 -v *",
+            (
+                "Running pytest with arguments --find-dependencies-internal "
+                "--find-dependencies-index=0 -n0 -v *"
+            ),
         ]
     )
