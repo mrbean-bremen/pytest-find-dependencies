@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from multiprocessing import Process
-from typing import Optional
 
 import pytest
 
@@ -108,7 +109,7 @@ class DependencyFinder:
         self,
         failed_items: list[pytest.Item],
         item_lists: list[list[pytest.Item]],
-        failed: Optional[list[bool]] = None,
+        failed: list[bool] | None = None,
         check_permanent: bool = False,
     ) -> None:
         if not failed_items:
